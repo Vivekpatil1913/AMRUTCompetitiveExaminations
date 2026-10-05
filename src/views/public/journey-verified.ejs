@@ -1,0 +1,21 @@
+<% const mr = lang === 'mr'; %>
+<div class="auth-wrap">
+  <div class="auth-card single">
+    <div class="main stack" style="text-align:center">
+      <span class="badge badge-info" style="align-self:center"><%= mr ? 'सिम्युलेशन – महाअमृत हस्तांतरण' : 'SIMULATION – Mahaamrut hand-off' %></span>
+      <span class="icon-tile" style="margin:0 auto;background:var(--success-bg);color:var(--success);border-color:#bbf7d0"><%- icon('check') %></span>
+      <h1 style="font-size:1.6rem"><%= mr ? 'पडताळणी यशस्वी' : 'Verification successful' %></h1>
+      <p class="mb-0"><%= mr ? 'आपली नोंदणी व पडताळणी महाअमृत पोर्टलवर पूर्ण झाली आहे. आता आपण स्पर्धा परीक्षा अभ्यास पोर्टलवर लॉगिन करू शकता.' : 'Your registration and verification on the Mahaamrut portal are complete. You can now login to the Competitive Examination Study Portal.' %></p>
+      <dl class="dl" style="text-align:left">
+        <dt><%= t('portal.candidateId') %></dt><dd><span class="hold">HOLD</span> <%= mr ? 'स्वरूप निश्चित करणे बाकी' : 'Format to be finalised' %></dd>
+        <dt><%= t('portal.verificationStatus') %></dt><dd><span class="status-dot ok"><%= t('status.verified') %></span></dd>
+      </dl>
+      <a class="btn btn-primary btn-lg btn-block" href="/login"><%- icon('login') %> <%= mr ? 'अभ्यास पोर्टलवर लॉगिन करा' : 'Login to the study portal' %></a>
+      <div class="integration-point small" style="text-align:left">
+        <strong><%- icon('link') %> <%= t('hold.integration') %></strong>
+        <%= mr ? 'हा स्क्रीन केवळ UX प्रवास दर्शवतो. महाअमृतकडून या पोर्टलकडे उमेदवाराची माहिती, युनिक आयडी व प्रवेश कसा पोहोचेल (API / SSO / redirect) हे निश्चित झालेले नाही.' : 'This screen only demonstrates the UX. How candidate data, unique ID and access reach this portal from Mahaamrut (API / SSO / redirect) is not decided.' %>
+      </div>
+      <a class="small" href="/journey"><%= t('common.back') %></a>
+    </div>
+  </div>
+</div>

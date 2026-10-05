@@ -1,0 +1,11 @@
+<section class="section">
+  <div class="container" style="max-width:640px">
+    <div class="card card-accent" style="text-align:center;align-items:center">
+      <span class="icon-tile" style="background:var(--success-bg);color:var(--success);border-color:#bbf7d0"><%- icon('check') %></span>
+      <h1 style="font-size:1.6rem"><%= lang === 'mr' ? 'माहिती सादर झाली' : 'Submitted successfully' %></h1>
+      <p><%= t('contribute.success') %></p>
+      <p class="small muted"><span class="hold">HOLD</span> <%= t('contribute.notifyHold') %></p>
+      <a class="btn btn-primary" href="/"><%- icon('home') %> <%= t('common.home') %></a>
+    </div>
+  </div>
+</section>

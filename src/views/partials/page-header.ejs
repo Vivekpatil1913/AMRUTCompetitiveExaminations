@@ -1,0 +1,7 @@
+<section class="page-header">
+  <div class="container">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumb"><li><a href="/"><%= t('common.home') %></a></li><% (typeof crumbs !== 'undefined' ? crumbs : []).forEach(c => { %><li><% if (c[1]) { %><a href="<%= c[1] %>"><%= c[0] %></a><% } else { %><%= c[0] %><% } %></li><% }) %><li aria-current="page"><%= title %></li></ol></nav>
+    <h1><%= title %></h1>
+    <% if (typeof lead !== 'undefined' && lead) { %><p><%= lead %></p><% } %>
+  </div>
+</section>

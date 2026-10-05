@@ -1,0 +1,8 @@
+<div class="page-title"><div><h1>Admin Users &amp; Roles</h1><p>Administrators who can access this panel.</p></div></div>
+<%- include('../partials/hold', { holdText: 'Admin roles & permissions are pending management confirmation. No role hierarchy has been created: every administrator currently has full access.', holdItems: ['Role names and responsibilities', 'Module-wise permissions', 'Content approval workflow (final content approval process)'] }) %>
+<div class="table-wrap mt-2">
+  <table class="table table-stack">
+    <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col">Active</th><th scope="col">Created</th></tr></thead>
+    <tbody><% admins.forEach(a => { %><tr><td data-label="Name"><%= a.name %></td><td data-label="Email"><%= a.email %></td><td data-label="Role"><%= a.role %> <span class="hold">HOLD</span></td><td data-label="Active"><%= a.is_active ? 'Yes' : 'No' %></td><td data-label="Created"><%= fmt.datetime(a.created_at) %></td></tr><% }) %></tbody>
+  </table>
+</div>

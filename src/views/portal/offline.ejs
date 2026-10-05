@@ -1,0 +1,52 @@
+<div class="page-title">
+  <div><h1><%= t('portal.offline') %></h1><p><%= t('pt.offlineLead') %></p></div>
+  <a class="btn btn-secondary btn-sm" href="/portal/bookings"><%- icon('bed') %> <%= t('portal.bookings') %></a>
+</div>
+
+<% const verified = candidate.verification_status === 'verified'; %>
+<% if (!verified) { %>
+  <div class="alert alert-warning mb-2" role="status"><%- icon('alert') %><p><%= t('pt.verifiedOnlyBook') %></p></div>
+<% } %>
+<div class="alert alert-info mb-2" role="note"><%- icon('info') %><p><%= S('deposit_note') || t('pt.depositNoteFallback') %></p></div>
+
+<% if (!batches.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'building', emptyTitle: t('pt.noBatches'), emptyText: t('common.noResultsHint') }) %>
+<% } else { %>
+  <div class="grid grid-2">
+    <% batches.forEach(b => { const pk = (a, c) => (lang === 'mr' && b[c]) ? b[c] : b[a]; const bk = booked[b.id]; %>
+      <article class="card card-accent">
+        <div class="card-head">
+          <h3><%- icon('building') %> <%= pk('course_en', 'course_mr') %></h3>
+          <%- include('../partials/mode-badge', { m: 'offline' }) %>
+        </div>
+        <dl class="dl">
+          <dt><%= t('common.batch') %></dt><dd><%= b.name %></dd>
+          <dt><%= t('common.exam') %></dt><dd><%= pk('exam_en', 'exam_mr') || '—' %></dd>
+          <dt><%= t('common.subjects') %></dt><dd><%= pk('subjects_en', 'subjects_mr') || '—' %></dd>
+          <dt><%= t('common.centre') %></dt><dd><%= b.centre_en ? ((b.centre_no ? b.centre_no + ' – ' : '') + pk('centre_en', 'centre_mr')) : '—' %><% if (b.centre_location) { %><br><span class="small muted"><%= b.centre_location %></span><% } %></dd>
+          <dt><%= t('common.period') %></dt><dd><% if (b.start_date && b.end_date) { %><%= fmt.date(b.start_date) %> – <%= fmt.date(b.end_date) %><br><span class="small muted"><%= t('common.duration') %>: <%= b.period_days %> <%= t('common.days') %></span><% } else { %><%= b.start_date ? fmt.date(b.start_date) : '—' %> <span class="hold"><%= t('status.hold') %></span><% } %></dd>
+          <dt><%= t('common.seats') %></dt><dd><%= b.seats != null ? b.seats : '—' %></dd>
+          <dt><%= t('pt.accommodation') %></dt><dd><%= b.accommodation_available ? t('pt.available') : t('pt.notAvailable') %></dd>
+          <dt><%= t('pt.bookingOpen') %></dt><dd><%= b.booking_open ? t('common.yes') : t('common.no') %></dd>
+          <dt><%= t('pt.deposit') %></dt><dd>
+            <% if (b.deposit_applicability === 'hold') { %><span class="hold"><%= t('status.hold') %></span> <span class="small"><%= t('pt.depositHoldShort') %></span>
+            <% } else if (b.deposit_applicability === 'not_applicable') { %><%= t('pt.depositApp.not_applicable') %>
+            <% } else { %><%= fmt.money(b.deposit_amount) %> · <%= t('pt.depositApp.' + b.deposit_applicability) %><% } %></dd>
+        </dl>
+        <% if (b.remarks) { %><p class="small muted mb-0"><%= b.remarks %></p><% } %>
+        <div class="foot">
+          <% if (bk) { %>
+            <span><%= t('pt.yourBooking') %>: <%- include('_status', { sval: bk.status }) %></span>
+            <a class="btn btn-outline btn-sm" href="/portal/bookings"><%= t('common.viewDetails') %></a>
+          <% } else if (!b.booking_open) { %>
+            <span class="badge badge-neutral"><%= t('pt.bookingClosed') %></span>
+          <% } else if (!verified) { %>
+            <button class="btn btn-primary btn-sm" type="button" disabled><%- icon('lock') %> <%= t('pt.registerBook') %></button>
+          <% } else { %>
+            <a class="btn btn-primary btn-sm" href="/portal/offline/book/<%= b.id %>"><%- icon('bed') %> <%= t('pt.registerBook') %></a>
+          <% } %>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+<% } %>

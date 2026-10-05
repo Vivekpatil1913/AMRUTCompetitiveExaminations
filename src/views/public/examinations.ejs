@@ -1,0 +1,25 @@
+<%- include('../partials/page-header', { lead: t('home.examsSub') }) %>
+<section class="section">
+  <div class="container">
+    <% if (exams.length) { %>
+    <div class="grid grid-2">
+      <% exams.forEach(e => { %>
+        <article class="card card-accent">
+          <div class="card-head"><h3><%- icon('exam') %> <%= L(e, 'name') %></h3><% if (e.short_name) { %><span class="badge badge-brand"><%= e.short_name %></span><% } %></div>
+          <p class="mb-0 muted"><%= L(e, 'description') %></p>
+          <div class="meta">
+            <span><%- icon('layers') %> <%= e.stage_count %> <%= t('common.stages') %></span>
+            <span><%- icon('book') %> <%= e.subject_count %> <%= t('common.subjects') %></span>
+            <span><%- icon('grid') %> <%= e.course_count %> <%= t('nav.courses') %></span>
+          </div>
+          <div class="foot">
+            <a class="btn btn-primary btn-sm" href="/examinations/<%= e.id %>"><%= t('common.viewDetails') %></a>
+            <% if (e.website_url) { %><a class="btn btn-ghost btn-sm" href="<%= e.website_url %>" target="_blank" rel="noopener"><%= t('common.officialSite') %> <%- icon('external') %></a><% } %>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'exam' }) %><% } %>
+    <p class="small muted mt-2 mb-0"><%- icon('info') %> <%= lang === 'mr' ? 'परीक्षांची यादी प्रशासकाद्वारे व्यवस्थापित केली जाते.' : 'The list of examinations is managed by the administrator.' %></p>
+  </div>
+</section>

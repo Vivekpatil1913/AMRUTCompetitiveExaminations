@@ -1,0 +1,13 @@
+<section class="section">
+  <div class="container" style="max-width:640px">
+    <div class="empty" role="alert">
+      <%- icon(code === 404 ? 'search' : code === 403 ? 'lock' : 'alert') %>
+      <h1 style="font-size:2.2rem;margin-bottom:.2rem"><%= code %></h1>
+      <p><%= message %></p>
+      <div class="row" style="justify-content:center">
+        <a class="btn btn-primary" href="/"><%- icon('home') %> <%= t('common.home') %></a>
+        <% if (code === 403 && !candidate) { %><a class="btn btn-outline" href="/login"><%= t('nav.login') %></a><% } %>
+      </div>
+    </div>
+  </div>
+</section>

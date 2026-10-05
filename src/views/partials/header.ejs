@@ -1,0 +1,31 @@
+<header class="site-header">
+  <div class="container">
+    <%- include('brand') %>
+    <div class="header-actions">
+      <% if (candidate) { %>
+        <a class="btn btn-primary" href="/portal"><%- icon('grid') %> <%= t('portal.dashboard') %></a>
+      <% } else { %>
+        <a class="btn btn-outline" href="/login"><%- icon('login') %> <%= t('nav.login') %></a>
+        <a class="btn btn-register" href="/register"><%= t('nav.register') %></a>
+      <% } %>
+      <button class="btn btn-secondary nav-toggle" type="button" data-nav-toggle aria-controls="mainnav" aria-expanded="false"><%- icon('menu') %><span class="sr-only"><%= t('a11y.menu') %></span></button>
+    </div>
+  </div>
+</header>
+<%
+  const navItems = [
+    ['/', 'nav.home'], ['/about', 'nav.about'], ['/examinations', 'nav.examinations'], ['/courses', 'nav.courses'],
+    ['/training', 'nav.training'], ['/lectures', 'nav.lectures'], ['/timetable', 'nav.timetable'], ['/resources', 'nav.resources'],
+    ['/yatra', 'nav.yatra'], ['/announcements', 'nav.announcements'], ['/important-links', 'nav.links'],
+  ];
+  const isCur = (href) => href === '/' ? path === '/' : path.startsWith(href);
+%>
+<nav class="mainnav" id="mainnav" aria-label="Main">
+  <div class="container">
+    <ul>
+      <% navItems.forEach(([href, key]) => { %>
+        <li><a href="<%= href %>"<% if (isCur(href)) { %> aria-current="page"<% } %>><%= t(key) %></a></li>
+      <% }) %>
+    </ul>
+  </div>
+</nav>

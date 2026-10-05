@@ -1,0 +1,28 @@
+<div class="page-title">
+  <div><h1><%= t('portal.yatra') %></h1><p><%= t('pt.yatraLead') %></p></div>
+</div>
+
+<% if (!entries.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'route', emptyTitle: t('pt.noYatra'), emptyText: t('common.noResultsHint') }) %>
+<% } else { %>
+  <ol class="timeline mb-3">
+    <% entries.forEach(y => { const isToday = y.schedule_date === today; %>
+      <li class="<%= isToday ? 'is-today' : '' %>">
+        <div class="date-tile" aria-hidden="true"><div class="m"><%= fmt.month(y.schedule_date) %></div><div class="d"><%= fmt.day(y.schedule_date) %></div></div>
+        <div class="body">
+          <h4><%= (lang === 'mr' && y.speaker_mr) ? y.speaker_mr : y.person_name %>
+            <% if (isToday) { %> <span class="badge badge-warning"><%= t('common.today') %></span><% } %></h4>
+          <% if (y.designation_en) { %><div class="small muted"><%= (lang === 'mr' && y.designation_mr) ? y.designation_mr : y.designation_en %></div><% } %>
+          <div class="meta small row" style="gap:.3rem .9rem">
+            <span><%- icon('calendar') %> <%= fmt.date(y.schedule_date) %></span>
+            <span><%- icon('clock') %> <%= fmt.timeRange(y.start_time, y.end_time) %></span>
+            <span><%- icon('map') %> <%= y.place %></span>
+          </div>
+          <% if (y.remarks) { %><p class="small mb-0 mt-1"><%= t('common.remarks') %>: <%= y.remarks %></p><% } %>
+        </div>
+      </li>
+    <% }) %>
+  </ol>
+<% } %>
+
+<%- include('../partials/hold', { holdTitle: t('hold.label'), holdText: t('pt.yatraHold') }) %>

@@ -1,0 +1,21 @@
+<%# Recursive topic tree. expects: nodes (from topicTree), nested (optional) %>
+<ul<%- typeof nested !== 'undefined' && nested ? '' : ' class="tree"' %>>
+  <% nodes.forEach(n => { %>
+    <li>
+      <% if (n.children.length) { %>
+        <details open>
+          <summary><%= L(n, 'name') %> <span class="small muted">(<%= n.children.length %>)</span></summary>
+          <%- include('_tree', { nodes: n.children, nested: true }) %>
+        </details>
+      <% } else { %>
+        <div class="leaf">
+          <span><%= L(n, 'name') %></span>
+          <span class="row small" style="gap:.6rem">
+            <a href="/portal/study-material?subject=<%= n.subject_id %>&amp;topic=<%= n.id %>"><%= t('portal.studyMaterial') %></a>
+            <a href="/portal/question-bank?subject=<%= n.subject_id %>&amp;topic=<%= n.id %>"><%= t('pt.practice') %></a>
+          </span>
+        </div>
+      <% } %>
+    </li>
+  <% }) %>
+</ul>

@@ -1,0 +1,52 @@
+<% const about = C('about'); %>
+<%- include('../partials/page-header', { lead: S('org_name') }) %>
+<section class="section">
+  <div class="container split">
+    <div class="stack">
+      <% String(L(about, 'body')).split('\n\n').forEach(p => { %><p><%= p %></p><% }) %>
+      <h2 class="mt-3"><%= lang === 'mr' ? 'उद्दिष्टे' : 'Objectives' %></h2>
+      <ul class="offer-list" style="grid-template-columns:1fr">
+        <% (lang === 'mr' ? [
+          'स्पर्धा परीक्षांची माहिती, अभ्यासक्रम व परीक्षा वेळापत्रक एकाच ठिकाणी उपलब्ध करणे',
+          'ऑनलाइन व ऑफलाइन प्रशिक्षण, व्याख्याने व मार्गदर्शन उपलब्ध करणे',
+          'प्रश्नसंच, व्हिडिओ, यूट्यूब संसाधने व अभ्यास साहित्य उपलब्ध करणे',
+          'व्याख्यानानंतर ऑनलाइन MCQ चाचण्या घेणे',
+          'स्वयंसेवी संस्था / संघटनांचे सहकार्य मिळविणे',
+        ] : [
+          'Provide examination information, syllabus and examination timetable references in one place',
+          'Provide online and offline training, lectures and guidance',
+          'Provide question banks, videos, YouTube resources and study material',
+          'Conduct online MCQ tests after lectures',
+          'Enable NGOs / organisations to contribute to the programme',
+        ]).forEach(o => { %><li><%- icon('check') %><span><%= o %></span></li><% }) %>
+      </ul>
+      <h2 class="mt-3"><%= lang === 'mr' ? 'उमेदवार प्रवर्ग' : 'User categories' %></h2>
+      <div class="table-wrap">
+        <table class="table table-stack">
+          <thead><tr><th scope="col"><%= t('portal.category') %></th><th scope="col"><%= lang === 'mr' ? 'पडताळणी' : 'Verification' %></th><th scope="col"><%= lang === 'mr' ? 'तपशील' : 'Details' %></th></tr></thead>
+          <tbody>
+            <tr><td data-label="<%= t('portal.category') %>"><strong>लक्षित गट</strong></td><td data-label="<%= lang === 'mr' ? 'पडताळणी' : 'Verification' %>">EWS <%= lang === 'mr' ? 'पडताळणी' : 'verification' %></td><td data-label="<%= lang === 'mr' ? 'तपशील' : 'Details' %>"><span class="hold">HOLD</span> <%= lang === 'mr' ? 'पात्रता, कागदपत्रे व प्रक्रिया निश्चित करणे बाकी' : 'Eligibility, documents & process to be finalised' %></td></tr>
+            <tr><td data-label="<%= t('portal.category') %>"><strong>Non-लक्षित गट</strong></td><td data-label="<%= lang === 'mr' ? 'पडताळणी' : 'Verification' %>"><%= lang === 'mr' ? 'जात पडताळणी' : 'Caste verification' %></td><td data-label="<%= lang === 'mr' ? 'तपशील' : 'Details' %>"><span class="hold">HOLD</span> <%= lang === 'mr' ? 'पात्रता, कागदपत्रे व प्रक्रिया निश्चित करणे बाकी' : 'Eligibility, documents & process to be finalised' %></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <aside class="stack">
+      <div class="card card-accent">
+        <h3><%= t('home.howTitle') %></h3>
+        <ol class="steps"><% t('reg.steps').forEach(s => { %><li><%= s %></li><% }) %></ol>
+        <a class="btn btn-register btn-block mt-1" href="/register"><%= t('nav.register') %></a>
+      </div>
+      <div class="card">
+        <h3><%- icon('users') %> <%= t('home.advisoryTitle') %></h3>
+        <% advisory.forEach(p => { %>
+          <div class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:.7rem">
+            <span class="avatar" style="width:38px;height:38px;font-size:.95rem"><% if (p.photo) { %><img src="<%= p.photo %>" alt=""><% } else { %><%= L(p, 'name').charAt(0) %><% } %></span>
+            <div><strong style="font-size:.9rem"><%= L(p, 'name') %></strong><div class="small muted"><%= L(p, 'designation') %></div></div>
+          </div>
+        <% }) %>
+        <p class="small muted mb-0"><span class="hold">HOLD</span> <%= t('home.advisoryNote') %></p>
+      </div>
+    </aside>
+  </div>
+</section>

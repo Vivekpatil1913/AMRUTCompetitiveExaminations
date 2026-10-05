@@ -1,0 +1,34 @@
+<div class="page-title">
+  <div><h1><%= t('portal.myCourses') %></h1><p><%= t('pt.coursesLead') %></p></div>
+</div>
+
+<% if (!courses.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'book', emptyTitle: t('pt.noCourses'), emptyText: t('pt.noCoursesHint') }) %>
+<% } else { const pk = (r, a, b) => (lang === 'mr' && r[b]) ? r[b] : r[a]; %>
+  <div class="table-wrap">
+    <table class="table table-stack">
+      <caption class="sr-only"><%= t('portal.myCourses') %></caption>
+      <thead><tr>
+        <th scope="col"><%= t('common.course') %></th><th scope="col"><%= t('common.exam') %></th><th scope="col"><%= t('portal.category') %></th>
+        <th scope="col"><%= t('common.batch') %></th><th scope="col"><%= t('common.mode') %></th><th scope="col"><%= t('common.start') %> / <%= t('common.end') %></th>
+        <th scope="col"><%= t('pt.centreOrOnline') %></th><th scope="col"><%= t('common.progress') %></th>
+      </tr></thead>
+      <tbody>
+        <% courses.forEach(c => { %>
+          <tr>
+            <td data-label="<%= t('common.course') %>"><a href="/portal/courses/<%= c.id %>"><strong><%= L(c, 'title') %></strong></a>
+              <% if (c.enrollment_status !== 'active') { %><br><span class="badge badge-neutral"><%= t('status.' + c.enrollment_status) %></span><% } %></td>
+            <td data-label="<%= t('common.exam') %>"><%= pk(c, 'exam_en', 'exam_mr') || '—' %></td>
+            <td data-label="<%= t('portal.category') %>"><%= pk(c, 'category_en', 'category_mr') || '—' %></td>
+            <td data-label="<%= t('common.batch') %>"><%= c.batch_name || '—' %></td>
+            <td data-label="<%= t('common.mode') %>"><%- include('../partials/mode-badge', { m: c.mode }) %></td>
+            <td data-label="<%= t('common.start') %> / <%= t('common.end') %>" class="nowrap"><%= c.start_date ? fmt.date(c.start_date) + ' – ' + fmt.date(c.end_date) : '—' %></td>
+            <td data-label="<%= t('pt.centreOrOnline') %>"><%= pk(c, 'centre_en', 'centre_mr') || (c.mode === 'offline' ? '—' : t('common.online')) %></td>
+            <td data-label="<%= t('common.progress') %>" style="min-width:160px"><%- include('_progress', { done: c.lec_done, total: c.lec_total }) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted mt-1"><%- icon('info') %> <%= t('pt.progressNote') %></p>
+<% } %>

@@ -1,0 +1,45 @@
+<%- include('../partials/page-header', { lead: L(C('contribute'), 'body') }) %>
+<%
+  const err = (k) => errors[k] ? `<span class="field-error" id="e-${k}">${esc(errors[k])}</span>` : '';
+  const inv = (k) => errors[k] ? `aria-invalid="true" aria-describedby="e-${k}"` : '';
+%>
+<section class="section">
+  <div class="container split">
+    <form class="form" method="post" action="/contribute?_csrf=<%= csrfToken %>" enctype="multipart/form-data" data-loading novalidate>
+      <% if (Object.keys(errors).length) { %><div class="alert alert-danger" role="alert"><%- icon('alert') %><p><%= lang === 'mr' ? 'कृपया चिन्हांकित फील्ड दुरुस्त करा.' : 'Please correct the highlighted fields.' %></p></div><% } %>
+      <fieldset class="fieldset">
+        <legend><%= lang === 'mr' ? 'संपर्क माहिती' : 'Contact information' %></legend>
+        <div class="form-grid">
+          <div class="field"><label for="name"><%= t('contribute.name') %><span class="req" aria-hidden="true">*</span></label><input class="input" id="name" name="name" required value="<%= v.name || '' %>" <%- inv('name') %>><%- err('name') %></div>
+          <div class="field"><label for="organization"><%= t('contribute.organization') %></label><input class="input" id="organization" name="organization" value="<%= v.organization || '' %>"></div>
+          <div class="field"><label for="contact_number"><%= t('contribute.contact') %><span class="req" aria-hidden="true">*</span></label><input class="input" id="contact_number" name="contact_number" inputmode="tel" required value="<%= v.contact_number || '' %>" <%- inv('contact_number') %>><%- err('contact_number') %></div>
+          <div class="field"><label for="email"><%= t('contribute.email') %></label><input class="input" id="email" name="email" type="email" value="<%= v.email || '' %>" <%- inv('email') %>><%- err('email') %></div>
+          <div class="field full"><label for="address"><%= t('contribute.address') %></label><input class="input" id="address" name="address" value="<%= v.address || '' %>"></div>
+          <div class="field full"><span class="label"><%= t('contribute.photo') %></span>
+            <div class="file-drop"><%- icon('upload') %><span><%= lang === 'mr' ? 'छायाचित्र निवडा (JPG / PNG, कमाल 5 MB)' : 'Choose a photo (JPG / PNG, max 5 MB)' %></span><span class="name"></span><input type="file" name="photo" accept="image/png,image/jpeg,image/webp" aria-label="<%= t('contribute.photo') %>"></div>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset class="fieldset">
+        <legend><%= t('contribute.type') %><span class="req" aria-hidden="true">*</span></legend>
+        <div class="choice-group" role="radiogroup">
+          <% types.forEach(k => { %><label class="choice"><input type="radio" name="contribution_type" value="<%= k %>" required <%= v.contribution_type === k ? 'checked' : '' %>><span><%= t('contribType.' + k) %></span></label><% }) %>
+        </div>
+        <%- err('contribution_type') %>
+        <div class="field mt-2" data-show-when="contribution_type=other" hidden>
+          <label for="other_specification"><%= t('contribute.other') %><span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="other_specification" name="other_specification" data-req value="<%= v.other_specification || '' %>" <%- inv('other_specification') %>><%- err('other_specification') %>
+        </div>
+        <div class="field mt-2"><label for="description"><%= t('contribute.description') %></label><textarea class="textarea" id="description" name="description"><%= v.description || '' %></textarea></div>
+      </fieldset>
+      <div class="form-actions"><button class="btn btn-primary btn-lg" type="submit"><%= t('common.submit') %></button><a class="btn btn-ghost" href="/"><%= t('common.cancel') %></a></div>
+    </form>
+    <aside class="stack">
+      <div class="card card-flat">
+        <h3><%- icon('heart') %> <%= lang === 'mr' ? 'सहकार्याचे प्रकार' : 'Ways to contribute' %></h3>
+        <ul class="offer-list" style="grid-template-columns:1fr"><% types.forEach(k => { %><li><%- icon('check') %><span><%= t('contribType.' + k) %></span></li><% }) %></ul>
+      </div>
+      <%- include('../partials/hold', { holdItems: [t('contribute.fieldsHold'), t('contribute.notifyHold')] }) %>
+    </aside>
+  </div>
+</section>

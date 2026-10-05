@@ -1,0 +1,22 @@
+<div class="page-title">
+  <div><h1><%= t('portal.links') %></h1><p><%= t('pt.linksLead') %></p></div>
+</div>
+
+<% if (!groups.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'link', emptyTitle: t('pt.noLinks'), emptyText: t('common.noResultsHint') }) %>
+<% } %>
+<div class="grid grid-2">
+  <% groups.forEach(g => { %>
+    <section class="card" aria-labelledby="lc-<%= g.cat %>">
+      <div class="card-head"><h3 id="lc-<%= g.cat %>"><%- icon('link') %> <%= t('linkCat.' + g.cat) %></h3></div>
+      <ul class="stack" style="list-style:none;padding:0;margin:0">
+        <% g.items.forEach(l => { %>
+          <li>
+            <a href="<%= l.url %>" target="_blank" rel="noopener"><%= L(l, 'title') %> <%- icon('external') %><span class="sr-only"> (<%= t('pt.newTab') %>)</span></a>
+            <% if (l.exam_en) { %><div class="small muted"><%= (lang === 'mr' && l.exam_mr) ? l.exam_mr : l.exam_en %></div><% } %>
+          </li>
+        <% }) %>
+      </ul>
+    </section>
+  <% }) %>
+</div>

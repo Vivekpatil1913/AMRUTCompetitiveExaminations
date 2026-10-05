@@ -1,0 +1,58 @@
+<div class="page-title">
+  <div><h1><%= t('pt.resourcesTitle') %></h1><p><%= t('pt.resourcesLead') %></p></div>
+</div>
+
+<nav class="tabs" aria-label="<%= t('pt.resourceTypes') %>">
+  <% types.forEach(ty => { %><a href="/portal/resources<%= qs({ exam: f.exam, subject: f.subject, topic: f.topic }, { type: ty }) %>"<%- f.type === ty ? ' aria-current="page"' : '' %>><%= t('resourceType.' + ty) %></a><% }) %>
+</nav>
+
+<% if (f.type === 'video' || f.type === 'youtube') { %>
+  <div class="alert alert-info mb-2" role="note"><%- icon('info') %><p><%= t('pt.youtubeNote') %></p></div>
+<% } %>
+
+<form class="filters" method="get" action="/portal/resources" role="search" aria-label="<%= t('common.filter') %>">
+  <input type="hidden" name="type" value="<%= f.type %>">
+  <%- include('_select', { fname: 'exam', flabel: t('common.exam'), fopts: opts.exam, fvalue: f.exam }) %>
+  <%- include('_select', { fname: 'subject', flabel: t('common.subject'), fopts: opts.subject, fvalue: f.subject }) %>
+  <%- include('_select', { fname: 'topic', flabel: t('common.topic'), fopts: opts.topic, fvalue: f.topic }) %>
+  <div class="actions">
+    <button class="btn btn-primary btn-sm" type="submit"><%- icon('search') %> <%= t('common.apply') %></button>
+    <a class="btn btn-ghost btn-sm" href="/portal/resources?type=<%= f.type %>"><%= t('common.reset') %></a>
+  </div>
+</form>
+
+<% if (!items.length) { %>
+  <%- include('../partials/empty', { emptyIcon: f.type === 'youtube' ? 'youtube' : f.type === 'video' ? 'video' : 'file', emptyTitle: t('common.noResults'), emptyText: t('common.noResultsHint') }) %>
+<% } else { %>
+  <div class="grid grid-auto">
+    <% items.forEach(r => { const yid = (r.resource_type === 'video' || r.resource_type === 'youtube') && r.url ? youtubeId(r.url) : null; %>
+      <% if (yid) { const pk = (a, b) => (lang === 'mr' && r[b]) ? r[b] : r[a]; %>
+        <article class="card">
+          <div class="row" style="gap:.7rem;align-items:flex-start;flex-wrap:nowrap">
+            <span class="icon-tile"><%- icon(r.resource_type === 'youtube' ? 'youtube' : 'video') %></span>
+            <div style="min-width:0">
+              <span class="badge badge-brand"><%= t('resourceType.' + r.resource_type) %></span>
+              <h3 class="mt-1" style="font-size:1rem"><%= L(r, 'title') %></h3>
+            </div>
+          </div>
+          <% if (L(r, 'description')) { %><p class="small muted mb-0"><%= L(r, 'description') %></p><% } %>
+          <div class="meta">
+            <% if (r.exam_en) { %><span><%- icon('exam') %><%= pk('exam_en', 'exam_mr') %></span><% } %>
+            <% if (r.subject_en) { %><span><%- icon('book') %><%= pk('subject_en', 'subject_mr') %></span><% } %>
+            <% if (r.topic_en) { %><span><%- icon('layers') %><%= pk('topic_en', 'topic_mr') %></span><% } %>
+          </div>
+          <div class="foot">
+            <% if (r.allowed) { %>
+              <a class="btn btn-primary btn-sm" href="https://www.youtube.com/watch?v=<%= yid %>" target="_blank" rel="noopener"><%- icon('play') %> <%= t('pt.watch') %><span class="sr-only"> (<%= t('pt.newTab') %>)</span></a>
+              <% if (r.access_level !== 'public') { %><span class="small muted"><%- icon('lock') %> <%= t('access.' + r.access_level) %></span><% } %>
+            <% } else { %>
+              <span class="badge badge-lock"><%- icon('lock') %> <%= t('access.' + r.access_level) %></span>
+            <% } %>
+          </div>
+        </article>
+      <% } else { %>
+        <%- include('../partials/resource-card', { r }) %>
+      <% } %>
+    <% }) %>
+  </div>
+<% } %>

@@ -1,0 +1,36 @@
+<%# Security-deposit payment section (framework only). expects: batch, values, errors, reqAttr ('required' | 'data-req') %>
+<% const qr = S('payment_qr'); %>
+<div class="stack">
+  <p class="mb-0"><strong><%= t('pt.depositAmount') %>:</strong> <%= fmt.money(batch.deposit_amount) %>
+    <% if (batch.deposit_amount == null) { %> <span class="hold"><%= t('status.hold') %></span><% } %></p>
+  <div class="alert alert-info" role="note"><%- icon('rupee') %><p><%= S('deposit_note') || t('pt.depositNoteFallback') %></p></div>
+  <% if (S('payment_instructions')) { %><p class="small mb-0"><%= S('payment_instructions') %></p><% } %>
+  <% if (qr) { %>
+    <figure class="mb-0">
+      <img src="<%= qr %>" alt="<%= t('pt.qrAlt') %>" style="max-width:220px;border:1px solid var(--line);border-radius:8px">
+    </figure>
+  <% } else { %>
+    <%- include('../partials/hold', { holdTitle: t('pt.qrHoldTitle'), holdText: t('pt.qrHoldText') }) %>
+  <% } %>
+  <div class="integration-point" role="note">
+    <strong><%- icon('link') %> <%= t('pt.gatewayHoldTitle') %></strong>
+    <p class="small mb-0"><%= t('pt.gatewayHoldText') %></p>
+  </div>
+  <div class="form-grid">
+    <div class="field">
+      <label for="transaction_ref"><%= t('pt.transactionRef') %> <span class="small muted">(<%= t('common.optional') %>)</span></label>
+      <input class="input" type="text" id="transaction_ref" name="transaction_ref" value="<%= values.transaction_ref %>" maxlength="100" autocomplete="off">
+      <span class="help"><%= t('pt.transactionRefHelp') %></span>
+    </div>
+    <div class="field">
+      <label for="proof"><%= t('pt.transactionProof') %> <span class="req" aria-hidden="true">*</span><span class="sr-only"> (<%= t('common.required') %>)</span></label>
+      <div class="file-drop">
+        <%- icon('upload') %>
+        <span><%= t('pt.proofHelp') %></span>
+        <input type="file" id="proof" name="proof" accept="image/png,image/jpeg,image/webp,application/pdf" <%= reqAttr %><%- errors.proof ? ' aria-invalid="true" aria-describedby="err-proof"' : '' %>>
+        <span class="name" aria-live="polite"></span>
+      </div>
+      <% if (errors.proof) { %><span class="field-error" id="err-proof"><%= errors.proof %></span><% } %>
+    </div>
+  </div>
+</div>

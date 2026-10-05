@@ -1,0 +1,17 @@
+<% if (marquee && marquee.length) { const mBase = typeof portalBase !== 'undefined' ? portalBase : ''; %>
+<div class="marquee" role="region" aria-label="<%= t('home.highlight') %>">
+  <div class="container">
+    <span class="label"><%- icon('megaphone') %> <%= t('home.highlight') %></span>
+    <div class="track">
+      <div class="items">
+        <% marquee.forEach(m => { %>
+          <a href="<%= m.kind === 'lec' ? mBase + '/lectures/' + m.id : (m.link_url || mBase + '/announcements#a' + m.id) %>"><%= L(m, 'title') %><% if (m.lecture_date) { %> – <%= fmt.date(m.lecture_date) %><% } %></a>
+        <% }) %>
+        <span class="dup" aria-hidden="true"><% marquee.forEach(m => { %><a tabindex="-1" href="<%= m.kind === 'lec' ? mBase + '/lectures/' + m.id : (m.link_url || mBase + '/announcements#a' + m.id) %>"><%= L(m, 'title') %><% if (m.lecture_date) { %> – <%= fmt.date(m.lecture_date) %><% } %></a><% }) %></span>
+      </div>
+    </div>
+    <button class="pause" type="button" data-marquee-toggle aria-pressed="false" aria-label="Pause announcements"
+      data-pause="<%= icon('pause') %>" data-play="<%= icon('play') %>"><%- icon('pause') %></button>
+  </div>
+</div>
+<% } %>

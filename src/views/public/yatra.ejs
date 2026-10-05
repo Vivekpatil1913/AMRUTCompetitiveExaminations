@@ -1,0 +1,33 @@
+<%- include('../partials/page-header', { lead: t('home.yatraSub') }) %>
+<section class="section">
+  <div class="container split">
+    <div>
+      <% if (rows.length) { %>
+      <ol class="timeline">
+        <% rows.forEach(y => { %>
+          <li class="<%= y.schedule_date === today ? 'is-today' : '' %>">
+            <div class="date-tile" aria-hidden="true"><div class="m"><%= fmt.month(y.schedule_date) %></div><div class="d"><%= fmt.day(y.schedule_date) %></div></div>
+            <div class="body">
+              <h4><%= lang === 'mr' && y.person_mr ? y.person_mr : y.person_name %></h4>
+              <% if (y.designation_en) { %><div class="small muted"><%= lang === 'mr' && y.designation_mr ? y.designation_mr : y.designation_en %></div><% } %>
+              <div class="small row mt-1" style="gap:.3rem 1rem">
+                <span><%- icon('calendar') %> <%= fmt.date(y.schedule_date) %><% if (y.schedule_date === today) { %> <span class="badge badge-warning"><%= t('common.today') %></span><% } %></span>
+                <span><%- icon('clock') %> <%= fmt.timeRange(y.start_time, y.end_time) %></span>
+                <span><%- icon('map') %> <%= y.place %></span>
+              </div>
+              <% if (y.remarks) { %><div class="small mt-1"><strong><%= t('common.remarks') %>:</strong> <%= y.remarks %></div><% } %>
+            </div>
+          </li>
+        <% }) %>
+      </ol>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'route' }) %><% } %>
+    </div>
+    <aside class="stack">
+      <div class="card card-flat">
+        <h3><%- icon('route') %> <%= t('nav.yatra') %></h3>
+        <p class="small mb-0"><%= lang === 'mr' ? 'व्याख्याते / संसाधन व्यक्तींच्या दौऱ्याचे वेळापत्रक: नाव, दिनांक, वेळ, ठिकाण व शेरा.' : 'Movement / schedule of lecturers and resource persons: name, date, time, place and remarks.' %></p>
+      </div>
+      <%- include('../partials/hold', { holdText: lang === 'mr' ? 'तपशीलवार वेळापत्रक / स्वयंचलन नियम निश्चित करणे बाकी. सध्या आजपासूनच्या प्रकाशित नोंदी दिनांक व वेळेनुसार दाखवल्या जातात.' : 'Detailed scheduling / automation logic to be finalised. Currently shows published entries from today onward, ordered by date and time.' }) %>
+    </aside>
+  </div>
+</section>

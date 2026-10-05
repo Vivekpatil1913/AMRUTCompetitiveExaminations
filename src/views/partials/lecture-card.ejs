@@ -1,0 +1,20 @@
+<%# expects: lec, base ('' for public, '/portal' for portal) %>
+<% const pk = (a, b) => (lang === 'mr' && lec[b]) ? lec[b] : lec[a]; %>
+<article class="card lecture-card<%= lec.is_highlighted ? ' highlight' : '' %>">
+  <div class="date-tile" aria-hidden="true"><div class="m"><%= fmt.month(lec.lecture_date) %></div><div class="d"><%= fmt.day(lec.lecture_date) %></div></div>
+  <div class="body">
+    <div class="row" style="gap:.4rem">
+      <span class="badge badge-brand"><%= t('lectureType.' + lec.lecture_type) %></span>
+      <%- include('mode-badge', { m: lec.mode }) %>
+      <% if (lec.visibility !== 'public') { %><span class="badge badge-lock"><%- icon('lock') %> <%= t('access.' + lec.visibility) %></span><% } %>
+    </div>
+    <h3><a href="<%= base %>/lectures/<%= lec.id %>"><%= L(lec, 'title') %></a></h3>
+    <div class="meta">
+      <% if (lec.speaker_en) { %><span><%- icon('mic') %><%= pk('speaker_en', 'speaker_mr') %></span><% } %>
+      <span><%- icon('calendar') %><%= fmt.date(lec.lecture_date) %></span>
+      <span><%- icon('clock') %><%= fmt.timeRange(lec.start_time, lec.end_time) %></span>
+      <% if (lec.mode === 'offline') { %><span><%- icon('map') %><%= pk('centre_en', 'centre_mr') || lec.venue || '—' %></span><% } %>
+      <% if (lec.subject_en) { %><span><%- icon('book') %><%= pk('subject_en', 'subject_mr') %></span><% } %>
+    </div>
+  </div>
+</article>

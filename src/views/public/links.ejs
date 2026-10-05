@@ -1,0 +1,32 @@
+<%- include('../partials/page-header', { lead: lang === 'mr' ? 'अधिकृत परीक्षा संकेतस्थळे, अभ्यासक्रम, परीक्षा वेळापत्रक व इतर अधिकृत संसाधने' : 'Official examination websites, syllabus, examination timetable and other official resources' }) %>
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2">
+      <% ['exam_website', 'syllabus', 'exam_timetable', 'amrut', 'other'].forEach(k => { const items = rows.filter(r => r.category === k); %>
+        <div class="card">
+          <div class="card-head"><h3><%- icon('link') %> <%= t('linkCat.' + k) %></h3></div>
+          <% if (items.length) { items.forEach(l => { %>
+            <a class="row-between" style="padding:.4rem 0;flex-wrap:nowrap" href="<%= l.url %>" target="_blank" rel="noopener"><span><%= L(l, 'title') %><% if (l.exam_en) { %> <span class="small muted">· <%= lang === 'mr' && l.exam_mr ? l.exam_mr : l.exam_en %></span><% } %></span><%- icon('external') %></a>
+          <% }) } else { %><p class="small muted mb-0"><span class="hold">HOLD</span> <%= t('common.notConfigured') %></p><% } %>
+        </div>
+      <% }) %>
+    </div>
+    <h2 class="mt-4"><%= lang === 'mr' ? 'परीक्षानिहाय अधिकृत दुवे' : 'Examination-wise official links' %></h2>
+    <div class="table-wrap">
+      <table class="table table-stack">
+        <thead><tr><th scope="col"><%= t('common.exam') %></th><th scope="col"><%= t('common.officialSite') %></th><th scope="col"><%= t('common.syllabus') %></th><th scope="col"><%= t('common.examTimetable') %></th></tr></thead>
+        <tbody>
+          <% exams.forEach(e => { %>
+            <tr>
+              <td data-label="<%= t('common.exam') %>"><a href="/examinations/<%= e.id %>"><%= L(e, 'name') %></a></td>
+              <% [['website_url', t('common.officialSite')], ['syllabus_url', t('common.syllabus')], ['timetable_url', t('common.examTimetable')]].forEach(([k, lbl]) => { %>
+                <td data-label="<%= lbl %>"><% if (e[k]) { %><a href="<%= e[k] %>" target="_blank" rel="noopener"><%= t('common.open') %> <%- icon('external') %></a><% } else { %><span class="hold">HOLD</span><% } %></td>
+              <% }) %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted mt-1"><%= lang === 'mr' ? 'HOLD: बाह्य दुवे प्रशासकाद्वारे निश्चित केले जातील (चर्चा आवश्यक).' : 'HOLD: external links are to be configured by the administrator (discussion required).' %></p>
+  </div>
+</section>

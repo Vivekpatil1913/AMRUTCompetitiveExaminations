@@ -1,0 +1,8 @@
+<%# Filter select. expects: fname, flabel, fopts [{ value, label }], fvalue %>
+<div class="field">
+  <label for="f-<%= fname %>"><%= flabel %></label>
+  <select class="select" id="f-<%= fname %>" name="<%= fname %>">
+    <option value=""><%= t('common.all') %></option>
+    <% fopts.forEach(o => { %><option value="<%= o.value %>"<%= String(o.value) === String(fvalue == null ? '' : fvalue) ? ' selected' : '' %>><%= o.label %></option><% }) %>
+  </select>
+</div>

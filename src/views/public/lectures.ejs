@@ -1,0 +1,25 @@
+<%- include('../partials/page-header', { lead: t('home.lecSub') }) %>
+<section class="section">
+  <div class="container">
+    <nav class="tabs" aria-label="<%= t('nav.lectures') %>">
+      <a href="/lectures<%= qs(f, { tab: '' }) %>"<% if (tab === 'upcoming') { %> aria-current="page"<% } %>><%= t('common.upcoming') %></a>
+      <a href="/lectures<%= qs(f, { tab: 'past' }) %>"<% if (tab === 'past') { %> aria-current="page"<% } %>><%= t('common.past') %></a>
+    </nav>
+    <form class="filters" method="get" action="/lectures">
+      <% if (tab === 'past') { %><input type="hidden" name="tab" value="past"><% } %>
+      <div class="field"><label for="f-type"><%= t('common.type') %></label>
+        <select class="select" id="f-type" name="type"><option value=""><%= t('common.all') %></option>
+          <% ['regular', 'guest', 'guidance', 'special'].forEach(k => { %><option value="<%= k %>"<%= f.type === k ? ' selected' : '' %>><%= t('lectureType.' + k) %></option><% }) %>
+        </select></div>
+      <div class="field"><label for="f-mode"><%= t('common.mode') %></label>
+        <select class="select" id="f-mode" name="mode"><option value=""><%= t('common.all') %></option>
+          <option value="online"<%= f.mode === 'online' ? ' selected' : '' %>><%= t('common.online') %></option>
+          <option value="offline"<%= f.mode === 'offline' ? ' selected' : '' %>><%= t('common.offline') %></option>
+        </select></div>
+      <div class="actions"><button class="btn btn-primary" type="submit"><%- icon('search') %> <%= t('common.apply') %></button><a class="btn btn-ghost" href="/lectures<%= tab === 'past' ? '?tab=past' : '' %>"><%= t('common.reset') %></a></div>
+    </form>
+    <% if (rows.length) { %>
+      <div class="grid grid-2"><% rows.forEach(lec => { %><%- include('../partials/lecture-card', { lec }) %><% }) %></div>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'mic' }) %><% } %>
+  </div>
+</section>

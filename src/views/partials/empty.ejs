@@ -1,0 +1,5 @@
+<div class="empty" role="status">
+  <%- icon(typeof emptyIcon !== 'undefined' ? emptyIcon : 'search') %>
+  <h3><%= typeof emptyTitle !== 'undefined' ? emptyTitle : t('common.noResults') %></h3>
+  <p class="mb-0"><%= typeof emptyText !== 'undefined' ? emptyText : t('common.noResultsHint') %></p>
+</div>

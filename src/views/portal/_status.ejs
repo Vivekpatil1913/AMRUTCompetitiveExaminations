@@ -1,0 +1,3 @@
+<%# Verification / registration status dot. expects: sval %>
+<% const dot = { verified: 'ok', registered: 'ok', active: 'ok', completed: 'ok', confirmed: 'ok', pending: 'wait', incomplete: 'wait', submitted: 'wait', proof_submitted: 'wait', rejected: 'bad', withdrawn: 'bad', cancelled: 'bad' }[sval] || ''; %>
+<span class="status-dot <%= dot %>"><%= t('status.' + sval) %></span>

@@ -1,0 +1,39 @@
+<div class="page-title"><div><h1><%= title %></h1><p><%= rows.length %> record(s)</p></div></div>
+<nav class="tabs">
+  <a href="/admin/bookings"<% if (tab === 'all') { %> aria-current="page"<% } %>>All bookings</a>
+  <a href="/admin/bookings?tab=proofs"<% if (tab === 'proofs') { %> aria-current="page"<% } %>>Payments / Transaction proofs</a>
+  <a href="/admin/bookings?tab=refunds"<% if (tab === 'refunds') { %> aria-current="page"<% } %>>Refunds</a>
+</nav>
+<% if (tab === 'refunds') { %>
+  <%- include('../partials/hold', { holdText: 'Refund policy, eligibility, deductions (expenses incurred), refund timeline and responsible authority: Discussion Required. This list only tracks deposits; no refund processing is implemented.' }) %>
+<% } else if (tab === 'proofs') { %>
+  <div class="alert alert-warning mb-2"><%- icon('info') %><p>Payment gateway / provider and bank / payment-account arrangement: HOLD. Candidates pay as per instructions and upload a transaction screenshot, which is reviewed here manually.</p></div>
+<% } %>
+<form class="filters mt-2" method="get" action="/admin/bookings">
+  <input type="hidden" name="tab" value="<%= tab === 'all' ? '' : tab %>">
+  <div class="field"><label for="status">Booking status</label><select class="select" id="status" name="status"><option value="">All</option><% ['submitted', 'confirmed', 'rejected', 'cancelled', 'completed'].forEach(s => { %><option value="<%= s %>"<%= status === s ? ' selected' : '' %>><%= t('status.' + s) %></option><% }) %></select></div>
+  <div class="actions"><button class="btn btn-primary" type="submit">Filter</button></div>
+</form>
+<% if (rows.length) { %>
+<div class="table-wrap">
+  <table class="table table-stack">
+    <thead><tr><th scope="col">#</th><th scope="col">Candidate</th><th scope="col">Batch / Centre</th><th scope="col">Accommodation</th><th scope="col">Deposit</th><th scope="col">Payment</th><th scope="col">Proof</th><th scope="col">Status</th><th scope="col">Refund</th><th scope="col">Submitted</th></tr></thead>
+    <tbody>
+      <% rows.forEach(b => { %>
+        <tr>
+          <td data-label="#"><a href="/admin/bookings/<%= b.id %>">#<%= b.id %></a></td>
+          <td data-label="Candidate"><a href="/admin/bookings/<%= b.id %>"><%= b.name %></a><br><span class="small mono muted"><%= b.candidate_uid || '' %></span></td>
+          <td data-label="Batch / Centre"><%= b.batch %><br><span class="small muted"><%= b.course || '' %><%= b.centre ? ' · ' + b.centre : '' %></span></td>
+          <td data-label="Accommodation"><%= b.accommodation_required ? 'Yes' : 'No' %></td>
+          <td data-label="Deposit"><%= fmt.money(b.deposit_amount) %></td>
+          <td data-label="Payment"><span class="badge <%= b.payment_status === 'verified' ? 'badge-success' : b.payment_status === 'proof_submitted' ? 'badge-warning' : b.payment_status === 'rejected' ? 'badge-danger' : 'badge-neutral' %>"><%= t('status.' + b.payment_status) %></span></td>
+          <td data-label="Proof"><% if (b.proof_path) { %><a href="/files/proof/<%= b.id %>" target="_blank" rel="noopener"><%- icon('file') %> View</a><% } else { %>—<% } %></td>
+          <td data-label="Status"><span class="badge badge-brand"><%= t('status.' + b.status) %></span></td>
+          <td data-label="Refund"><%- b.refund_status === 'hold' ? '<span class="hold">HOLD</span>' : t('status.' + b.refund_status) %></td>
+          <td data-label="Submitted" class="small nowrap"><%= fmt.datetime(b.created_at) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } else { %><%- include('../partials/empty', { emptyIcon: 'bed', emptyTitle: 'No bookings', emptyText: 'Offline bookings submitted by candidates will appear here.' }) %><% } %>

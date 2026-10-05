@@ -1,0 +1,25 @@
+<%- include('../partials/page-header', { crumbs: [[t('nav.training'), '/training']], lead: lang === 'mr' ? 'ऑफलाइन प्रशिक्षण केंद्रांची माहिती' : 'Information about offline training centres' }) %>
+<section class="section">
+  <div class="container">
+    <p class="small muted"><span class="hold">HOLD</span> <%= lang === 'mr' ? 'केंद्रांची अंतिम रचना निश्चित करणे बाकी.' : 'Exact centre structure to be finalised.' %></p>
+    <% if (centres.length) { %>
+    <div class="grid grid-2">
+      <% centres.forEach(ce => { %>
+        <article class="card card-accent">
+          <div class="card-head"><h3><%- icon('building') %> <%= L(ce, 'name') %></h3><% if (ce.centre_no) { %><span class="badge badge-brand"><%= lang === 'mr' ? 'केंद्र क्र.' : 'Centre No.' %> <%= ce.centre_no %></span><% } %></div>
+          <dl class="dl">
+            <dt><%= t('common.location') %></dt><dd><%= ce.location || '—' %></dd>
+            <dt><%= lang === 'mr' ? 'पत्ता' : 'Address' %></dt><dd><%= ce.address || '—' %></dd>
+            <dt><%= t('footer.contact') %></dt><dd><%= ce.contact || '—' %></dd>
+            <dt><%= t('common.batch') %></dt><dd><% if (ce.batches.length) { ce.batches.forEach(b => { %><div><%= b.name %> <span class="small muted">(<%= fmt.date(b.start_date) %> – <%= fmt.date(b.end_date) %>)</span></div><% }) } else { %>—<% } %></dd>
+          </dl>
+          <div class="foot">
+            <% if (ce.map_url) { %><a class="btn btn-secondary btn-sm" href="<%= ce.map_url %>" target="_blank" rel="noopener"><%- icon('map') %> <%= lang === 'mr' ? 'नकाशा' : 'Map' %></a><% } %>
+            <a class="btn btn-ghost btn-sm" href="/timetable?mode=offline"><%= t('nav.timetable') %></a>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'building' }) %><% } %>
+  </div>
+</section>

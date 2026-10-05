@@ -1,0 +1,36 @@
+<div class="page-title"><div><h1>Settings</h1><p>Website configuration managed without developer involvement.</p></div></div>
+<nav class="tabs">
+  <% Object.entries(groups).forEach(([k, label]) => { %><a href="/admin/settings?group=<%= k %>"<% if (group === k) { %> aria-current="page"<% } %>><%= label %></a><% }) %>
+</nav>
+<% if (group === 'integration') { %>
+  <div class="integration-point mb-2"><strong><%- icon('link') %> <%= t('hold.integration') %></strong>The REGISTER / APPLY button sends candidates to the Mahaamrut registration URL below. The return / authentication mechanism (API, SSO, redirect token, data sync) is not decided and is not implemented.</div>
+<% } else if (group === 'payment') { %>
+  <div class="alert alert-warning mb-2"><%- icon('info') %><p>HOLD: payment gateway / provider and bank / payment-account arrangement. No gateway (Razorpay, Cashfree, PayU, UPI API, bank API) is integrated. Deposit amount &amp; applicability are configured per batch.</p></div>
+<% } %>
+<form class="card form" method="post" action="/admin/settings?group=<%= group %>&_csrf=<%= csrfToken %>" enctype="multipart/form-data" data-loading>
+  <% rows.forEach(s => { %>
+    <fieldset class="fieldset">
+      <legend><%= s.label %></legend>
+      <% if (s.input_type === 'image') { %>
+        <div class="row">
+          <% if (s.value_en) { %><img src="<%= s.value_en %>" alt="Current <%= s.label %>" style="max-height:60px;border:1px solid var(--line);border-radius:6px;padding:4px;background:#fff"><label class="check"><input type="checkbox" name="<%= s.key %>__remove"> Remove</label><% } else { %><span class="muted small">Not set</span><% } %>
+        </div>
+        <div class="file-drop mt-1"><%- icon('upload') %><span>Upload image (PNG / JPG / SVG / ICO)</span><span class="name"></span><input type="file" name="<%= s.key %>" accept="image/*" aria-label="<%= s.label %>"></div>
+      <% } else { %>
+        <div class="form-grid">
+          <div class="field<%= s.input_type === 'url' || ['footer_phone','footer_email'].includes(s.key) ? ' full' : '' %>"><label for="<%= s.key %>__en"><%= s.input_type === 'url' || ['footer_phone','footer_email'].includes(s.key) ? 'Value' : 'English' %></label>
+            <% if (s.input_type === 'textarea') { %><textarea class="textarea" id="<%= s.key %>__en" name="<%= s.key %>__en"><%= s.value_en || '' %></textarea>
+            <% } else { %><input class="input" id="<%= s.key %>__en" name="<%= s.key %>__en" type="<%= s.input_type === 'url' ? 'url' : 'text' %>" value="<%= s.value_en || '' %>"><% } %>
+          </div>
+          <% if (!(s.input_type === 'url' || ['footer_phone','footer_email'].includes(s.key))) { %>
+          <div class="field"><label for="<%= s.key %>__mr">मराठी</label>
+            <% if (s.input_type === 'textarea') { %><textarea class="textarea" id="<%= s.key %>__mr" name="<%= s.key %>__mr" lang="mr"><%= s.value_mr || '' %></textarea>
+            <% } else { %><input class="input" id="<%= s.key %>__mr" name="<%= s.key %>__mr" lang="mr" value="<%= s.value_mr || '' %>"><% } %>
+          </div>
+          <% } %>
+        </div>
+      <% } %>
+    </fieldset>
+  <% }) %>
+  <div class="form-actions"><button class="btn btn-primary" type="submit"><%- icon('check') %> Save settings</button></div>
+</form>

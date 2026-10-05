@@ -1,0 +1,24 @@
+<div class="page-title">
+  <div><h1><%= t('pt.assessmentTitle') %></h1><p><%= t('pt.assessmentLead') %></p></div>
+  <span class="hold"><%= t('status.hold') %></span>
+</div>
+
+<% const areaIcon = { adaptability: 'settings', interest: 'heart', career_counselling: 'users' }; %>
+<% if (!assessments.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'brain', emptyTitle: t('common.noResults'), emptyText: '' }) %>
+<% } else { %>
+  <div class="grid grid-3 mb-3">
+    <% assessments.forEach(a => { %>
+      <article class="card card-accent">
+        <div class="row" style="flex-wrap:nowrap"><span class="icon-tile"><%- icon(areaIcon[a.area] || 'brain') %></span><h3 style="font-size:1.05rem"><%= L(a, 'title') %></h3></div>
+        <% if (L(a, 'description')) { %><p class="small muted mb-0"><%= L(a, 'description') %></p><% } %>
+        <div class="meta"><span><%- icon('user') %><%= t('pt.conductedBy') %>: <%= a.conducted_by || '—' %></span></div>
+        <div class="foot">
+          <% if (a.status === 'hold') { %><span class="hold"><%= t('status.hold') %></span><% } else { %><span class="badge badge-neutral"><%= t('status.' + a.status) %></span><% } %>
+          <button class="btn btn-primary btn-sm" type="button" disabled><%= t('common.start') %></button>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+<% } %>
+<%- include('../partials/hold', { holdTitle: t('hold.label'), holdText: t('pt.assessmentHold') }) %>

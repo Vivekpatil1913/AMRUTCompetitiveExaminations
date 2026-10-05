@@ -1,0 +1,53 @@
+<div class="page-title">
+  <div><h1><%= t('portal.questionBank') %></h1><p><%= t('pt.qbLead') %></p></div>
+  <a class="btn btn-secondary btn-sm" href="/portal/resources?type=question_bank"><%- icon('file') %> <%= t('pt.qbPdfs') %></a>
+</div>
+
+<form class="filters" method="get" action="/portal/question-bank" role="search" aria-label="<%= t('common.filter') %>">
+  <%- include('_select', { fname: 'exam', flabel: t('common.exam'), fopts: opts.exam, fvalue: f.exam }) %>
+  <%- include('_select', { fname: 'subject', flabel: t('common.subject'), fopts: opts.subject, fvalue: f.subject }) %>
+  <%- include('_select', { fname: 'topic', flabel: t('common.topic'), fopts: opts.topic, fvalue: f.topic }) %>
+  <div class="field">
+    <label for="f-n"><%= t('pt.practiceSize') %></label>
+    <input class="input" type="number" id="f-n" name="n" min="1" max="50" value="<%= f.n %>" aria-describedby="f-n-help">
+    <span class="help" id="f-n-help"><%= t('pt.practiceSizeHelp') %></span>
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary btn-sm" type="submit"><%- icon('search') %> <%= t('common.apply') %></button>
+    <a class="btn btn-ghost btn-sm" href="/portal/question-bank"><%= t('common.reset') %></a>
+  </div>
+</form>
+
+<div class="alert alert-info mb-2" role="note"><%- icon('info') %><p><%= t('pt.qbNotStored') %></p></div>
+
+<% if (checked && tally) { %>
+  <section class="mb-3" aria-labelledby="tally-h">
+    <h2 id="tally-h" class="sr-only"><%= t('pt.practiceResult') %></h2>
+    <div class="score-tiles" role="status">
+      <div class="score-tile"><div class="v"><%= tally.correct %> / <%= tally.total %></div><div class="k"><%= t('pt.score') %></div></div>
+      <div class="score-tile ok"><div class="v"><%= tally.correct %></div><div class="k"><%= t('pt.correct') %></div></div>
+      <div class="score-tile bad"><div class="v"><%= tally.incorrect %></div><div class="k"><%= t('pt.incorrect') %></div></div>
+      <div class="score-tile"><div class="v"><%= tally.unanswered %></div><div class="k"><%= t('pt.unanswered') %></div></div>
+    </div>
+  </section>
+<% } %>
+
+<% if (!questions.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'question', emptyTitle: t('pt.noQuestions'), emptyText: t('common.noResultsHint') }) %>
+<% } else { %>
+  <form method="post" action="/portal/question-bank/check" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <% ['exam', 'subject', 'topic', 'n'].forEach(k => { if (f[k]) { %><input type="hidden" name="<%= k %>" value="<%= f[k] %>"><% } }) %>
+    <% questions.forEach((q, i) => { %>
+      <input type="hidden" name="qid" value="<%= q.id %>">
+      <%- include('_mcq', { q, i, mcqName: 'ans_' + q.id, picked: answers[q.id] || null, reveal: checked }) %>
+    <% }) %>
+    <div class="form-actions mt-2">
+      <% if (checked) { %>
+        <a class="btn btn-primary" href="/portal/question-bank<%= qs({ exam: f.exam, subject: f.subject, topic: f.topic, n: f.n }) %>"><%= t('pt.tryAgain') %></a>
+      <% } else { %>
+        <button class="btn btn-primary" type="submit"><%- icon('check') %> <%= t('pt.checkAnswers') %></button>
+      <% } %>
+    </div>
+  </form>
+<% } %>

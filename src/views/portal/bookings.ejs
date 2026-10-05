@@ -1,0 +1,47 @@
+<div class="page-title">
+  <div><h1><%= t('portal.bookings') %></h1><p><%= t('pt.bookingsLead') %></p></div>
+  <a class="btn btn-secondary btn-sm" href="/portal/offline"><%- icon('building') %> <%= t('portal.offline') %></a>
+</div>
+
+<ol class="steps-h" aria-label="<%= t('pt.bookingProcess') %>">
+  <li class="<%= bookings.length ? 'done' : 'current' %>"><%= t('pt.pstepSubmit') %></li>
+  <li><%= t('pt.pstepAttend') %></li>
+  <li><%= t('pt.pstepComplete') %></li>
+  <li><%= t('pt.pstepRefund') %> <span class="hold"><%= t('status.hold') %></span></li>
+</ol>
+
+<% if (!bookings.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'bed', emptyTitle: t('pt.noBookings'), emptyText: t('pt.noBookingsHint') }) %>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="table table-stack">
+      <caption class="sr-only"><%= t('portal.bookings') %></caption>
+      <thead><tr>
+        <th scope="col"><%= t('common.batch') %></th><th scope="col"><%= t('common.course') %></th><th scope="col"><%= t('common.centre') %></th>
+        <th scope="col"><%= t('common.period') %></th><th scope="col"><%= t('pt.accommodation') %></th><th scope="col"><%= t('pt.deposit') %></th>
+        <th scope="col"><%= t('pt.paymentStatus') %></th><th scope="col"><%= t('pt.bookingStatus') %></th><th scope="col"><%= t('pt.refundStatus') %></th>
+        <th scope="col"><%= t('pt.transactionProof') %></th><th scope="col"><%= t('pt.submittedOn') %></th>
+      </tr></thead>
+      <tbody>
+        <% bookings.forEach(b => { const pk = (a, c) => (lang === 'mr' && b[c]) ? b[c] : b[a]; %>
+          <tr>
+            <td data-label="<%= t('common.batch') %>"><strong><%= b.batch_name %></strong></td>
+            <td data-label="<%= t('common.course') %>"><%= pk('course_en', 'course_mr') || '—' %></td>
+            <td data-label="<%= t('common.centre') %>"><%= pk('centre_en', 'centre_mr') || '—' %></td>
+            <td data-label="<%= t('common.period') %>" class="nowrap"><%= b.start_date ? fmt.date(b.start_date) + ' – ' + fmt.date(b.end_date) : '—' %></td>
+            <td data-label="<%= t('pt.accommodation') %>"><%= b.accommodation_required ? t('common.yes') : t('common.no') %></td>
+            <td data-label="<%= t('pt.deposit') %>"><%= b.deposit_amount != null ? fmt.money(b.deposit_amount) : t('status.not_applicable') %></td>
+            <td data-label="<%= t('pt.paymentStatus') %>"><%- include('_status', { sval: b.payment_status }) %></td>
+            <td data-label="<%= t('pt.bookingStatus') %>"><%- include('_status', { sval: b.status }) %><% if (b.admin_remarks) { %><br><span class="small muted"><%= b.admin_remarks %></span><% } %></td>
+            <td data-label="<%= t('pt.refundStatus') %>"><% if (b.refund_status === 'hold') { %><span class="hold"><%= t('status.hold') %></span><% } else { %><%= t('status.' + b.refund_status) %><% } %></td>
+            <td data-label="<%= t('pt.transactionProof') %>"><% if (b.proof_path) { %><a href="/files/proof/<%= b.id %>" target="_blank" rel="noopener"><%- icon('file') %> <%= t('common.open') %></a><% } else { %>—<% } %></td>
+            <td data-label="<%= t('pt.submittedOn') %>" class="nowrap"><%= fmt.datetime(b.created_at) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<div class="mt-3">
+  <%- include('../partials/hold', { holdTitle: t('hold.label'), holdText: t('pt.refundHold') }) %>
+</div>

@@ -1,0 +1,42 @@
+<% const pk = (r, a, b) => (lang === 'mr' && r[b]) ? r[b] : r[a]; %>
+<div class="page-title">
+  <div><h1><%= L(subject, 'name') %></h1><p><%= pk(subject, 'exam_en', 'exam_mr') || '' %><% if (subject.stage_en) { %> · <%= pk(subject, 'stage_en', 'stage_mr') %><% } %></p></div>
+  <div class="row">
+    <a class="btn btn-secondary btn-sm" href="/portal/question-bank?subject=<%= subject.id %>"><%- icon('question') %> <%= t('portal.questionBank') %> (<%= qCount %>)</a>
+    <a class="btn btn-ghost btn-sm" href="/portal/subjects"><%= t('common.back') %></a>
+  </div>
+</div>
+
+<% if (L(subject, 'description')) { %><p><%= L(subject, 'description') %></p><% } %>
+
+<div class="split">
+  <div class="stack">
+    <section class="card" aria-labelledby="lec-h">
+      <div class="card-head"><h3 id="lec-h"><%- icon('mic') %> <%= t('common.lecture') %></h3></div>
+      <% if (lectures.length) { %>
+        <div class="stack"><% lectures.forEach(lec => { %><%- include('../partials/lecture-card', { lec, base: '/portal' }) %><% }) %></div>
+      <% } else { %>
+        <p class="small muted mb-0"><%= t('pt.noLectures') %></p>
+      <% } %>
+    </section>
+
+    <section aria-labelledby="mat-h">
+      <h2 id="mat-h" class="mb-2" style="font-size:1.15rem"><%- icon('file') %> <%= t('portal.studyMaterial') %></h2>
+      <% if (materials.length) { %>
+        <div class="grid grid-2"><% materials.forEach(r => { %><%- include('../partials/resource-card', { r }) %><% }) %></div>
+      <% } else { %>
+        <p class="small muted"><%= t('pt.noMaterial') %></p>
+      <% } %>
+    </section>
+
+    <section aria-labelledby="tst-h">
+      <h2 id="tst-h" class="mb-2" style="font-size:1.15rem"><%- icon('test') %> <%= t('portal.tests') %></h2>
+      <%- include('_test-list', { tests }) %>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="top-h">
+    <div class="card-head"><h3 id="top-h"><%- icon('layers') %> <%= t('common.topics') %></h3></div>
+    <% if (tree.length) { %><%- include('_tree', { nodes: tree }) %><% } else { %><p class="small muted mb-0"><%= t('pt.noTopics') %></p><% } %>
+  </section>
+</div>

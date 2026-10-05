@@ -1,0 +1,40 @@
+<div class="page-title">
+  <div><h1><%= t('portal.timetable') %></h1><p><%= t('pt.timetableLead') %></p></div>
+  <span class="hold" title="<%= t('hold.label') %>"><%= t('pt.timetableHold') %></span>
+</div>
+
+<form class="filters" method="get" action="/portal/timetable" role="search" aria-label="<%= t('common.filter') %>">
+  <input type="hidden" name="f" value="1">
+  <%- include('_select', { fname: 'exam', flabel: t('common.exam'), fopts: opts.exam, fvalue: f.exam }) %>
+  <%- include('_select', { fname: 'course', flabel: t('common.course'), fopts: opts.course, fvalue: f.course }) %>
+  <%- include('_select', { fname: 'subject', flabel: t('common.subject'), fopts: opts.subject, fvalue: f.subject }) %>
+  <div class="field">
+    <label for="f-mode"><%= t('common.mode') %></label>
+    <select class="select" id="f-mode" name="mode">
+      <option value=""><%= t('common.all') %></option>
+      <option value="online"<%= f.mode === 'online' ? ' selected' : '' %>><%= t('common.online') %></option>
+      <option value="offline"<%= f.mode === 'offline' ? ' selected' : '' %>><%= t('common.offline') %></option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-from"><%= t('pt.fromDate') %></label>
+    <input class="input" type="date" id="f-from" name="from" value="<%= f.from %>">
+  </div>
+  <div class="field">
+    <label for="f-to"><%= t('pt.toDate') %></label>
+    <input class="input" type="date" id="f-to" name="to" value="<%= f.to %>">
+  </div>
+  <div class="field">
+    <label class="check" for="f-mine"><input type="checkbox" id="f-mine" name="mine" value="1"<%= f.mine ? ' checked' : '' %>> <%= t('pt.myCoursesOnly') %></label>
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary btn-sm" type="submit"><%- icon('search') %> <%= t('common.apply') %></button>
+    <a class="btn btn-ghost btn-sm" href="/portal/timetable"><%= t('common.reset') %></a>
+  </div>
+</form>
+
+<% if (!rows.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'calendar', emptyTitle: t('common.noResults'), emptyText: f.mine ? t('pt.timetableEmptyMine') : t('common.noResultsHint') }) %>
+<% } else { %>
+  <%- include('../partials/timetable-table', { rows, base: '/portal', canSee }) %>
+<% } %>

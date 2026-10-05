@@ -1,0 +1,31 @@
+<div class="page-title">
+  <div><h1><%= t('portal.profile') %></h1><p><%= t('pt.profileLead') %></p></div>
+</div>
+
+<div class="split">
+  <dl class="dl">
+    <dt><%= t('portal.candidateName') %></dt><dd><%= candidate.name %></dd>
+    <dt><%= t('portal.candidateId') %></dt><dd><%= candidate.candidate_uid || '—' %></dd>
+    <dt><%= t('pt.mobile') %></dt><dd><%= candidate.mobile || '—' %></dd>
+    <dt><%= t('pt.email') %></dt><dd><%= candidate.email || '—' %></dd>
+    <dt><%= t('portal.category') %></dt><dd><%= t('status.' + candidate.category) %></dd>
+    <dt><%= t('portal.registrationStatus') %></dt><dd><%- include('_status', { sval: candidate.registration_status }) %></dd>
+    <dt><%= t('portal.verificationStatus') %></dt><dd><%- include('_status', { sval: candidate.verification_status }) %></dd>
+    <dt><%= t('pt.verificationRemarks') %></dt><dd><%= candidate.verification_remarks || '—' %></dd>
+    <dt><%= t('pt.enrolledCourses') %></dt><dd>
+      <% if (courses.length) { %><ul class="mb-0" style="padding-left:1.1rem"><% courses.forEach(c => { %><li><a href="/portal/courses/<%= c.id %>"><%= L(c, 'title') %></a><% if (c.enrollment_status !== 'active') { %> <span class="small muted">(<%= t('status.' + c.enrollment_status) %>)</span><% } %></li><% }) %></ul>
+      <% } else { %>—<% } %></dd>
+    <dt><%= t('pt.materialPermission') %></dt><dd>
+      <% if (candidate.study_material_permitted) { %><span class="badge badge-success"><%= t('pt.permittedByAdmin') %></span>
+      <% } else if (candidate.category === 'lakshit' && candidate.verification_status === 'verified') { %><span class="badge badge-success"><%= t('pt.permittedLakshit') %></span>
+      <% } else { %><span class="badge badge-neutral"><%= t('pt.notPermitted') %></span><% } %>
+      <% if (grants) { %><br><span class="small muted"><%= t('pt.grantsCount').replace('{n}', grants) %></span><% } %></dd>
+  </dl>
+  <div class="stack">
+    <div class="integration-point" role="note">
+      <strong><%- icon('link') %> <%= t('hold.integration') %></strong>
+      <p class="small mb-0"><%= t('pt.profileIntegration') %></p>
+    </div>
+    <%- include('../partials/hold', { holdTitle: t('hold.label'), holdText: t('pt.profileEditHold') }) %>
+  </div>
+</div>

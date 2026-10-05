@@ -1,0 +1,77 @@
+<%
+  const fieldOf = (n) => cfg.fields.find(f => f.name === n) || { name: n, label: n, type: 'text' };
+  const optLabel = (f, v) => { const o = (options[f.name] || []).find(o => String(o.id) === String(v)); return o ? o.label : (v ?? ''); };
+  const cell = (f, v) => {
+    if (v === null || v === undefined || v === '') return '<span class="muted">—</span>';
+    switch (f.type) {
+      case 'checkbox': return v ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-neutral">No</span>';
+      case 'ref': case 'select': {
+        const l = optLabel(f, v);
+        if (f.name === 'deposit_applicability' && v === 'hold') return '<span class="hold">HOLD</span>';
+        if (['mode', 'lecture_type', 'status', 'category', 'access_level', 'test_type', 'contribution_type', 'area'].includes(f.name)) return `<span class="badge ${v === 'online' ? 'badge-online' : v === 'offline' ? 'badge-offline' : v === 'hold' ? 'badge-warning' : 'badge-brand'}">${esc(l)}</span>`;
+        return esc(l);
+      }
+      case 'date': return fmt.date(v);
+      case 'time': return fmt.time(v);
+      case 'money': return fmt.money(v);
+      case 'url': return `<a href="${esc(v)}" target="_blank" rel="noopener">${esc(String(v).replace(/^https?:\/\//, '').slice(0, 40))}</a>`;
+      default: {
+        if (v instanceof Date) return fmt.datetime(v);
+        const s = String(v); return esc(s.length > 70 ? s.slice(0, 70) + '…' : s);
+      }
+    }
+  };
+  const base = '/admin/' + cfg.key;
+  const keep = { q: query.q || '' }; (cfg.filters || []).forEach(n => { keep['f_' + n] = query['f_' + n] || ''; });
+%>
+<div class="page-title">
+  <div><h1><%= cfg.title %></h1><p><%= total %> record<%= total === 1 ? '' : 's' %></p></div>
+  <% if (!cfg.noCreate) { %><a class="btn btn-primary" href="<%= base %>/new"><%- icon('plus') %> Add new</a><% } %>
+</div>
+<% if (cfg.hint) { %><div class="alert <%= /HOLD/.test(cfg.hint) ? 'alert-warning' : 'alert-info' %> mb-2"><%- icon('info') %><p><%= cfg.hint %></p></div><% } %>
+
+<% if (cfg.search || (cfg.filters && cfg.filters.length)) { %>
+<form class="filters" method="get" action="<%= base %>">
+  <% if (cfg.search) { %><div class="field"><label for="q">Search</label><input class="input" id="q" name="q" value="<%= query.q || '' %>" placeholder="Search…"></div><% } %>
+  <% (cfg.filters || []).forEach(n => { const f = fieldOf(n); %>
+    <div class="field"><label for="f_<%= n %>"><%= f.label %></label>
+      <select class="select" id="f_<%= n %>" name="f_<%= n %>"><option value="">All</option>
+        <% (options[n] || []).forEach(o => { %><option value="<%= o.id %>"<%= String(query['f_' + n]) === String(o.id) ? ' selected' : '' %>><%= o.label %></option><% }) %>
+      </select></div>
+  <% }) %>
+  <div class="actions"><button class="btn btn-primary" type="submit"><%- icon('search') %> Filter</button><a class="btn btn-ghost" href="<%= base %>">Reset</a></div>
+</form>
+<% } %>
+
+<% if (rows.length) { %>
+<div class="table-wrap">
+  <table class="table table-stack">
+    <thead><tr><% cfg.list.forEach(n => { %><th scope="col"><%= fieldOf(n).label.replace(' (English)', '') %></th><% }) %><th scope="col" class="actions">Actions</th></tr></thead>
+    <tbody>
+      <% rows.forEach(r => { %>
+        <tr>
+          <% cfg.list.forEach((n, i) => { const f = fieldOf(n); %>
+            <td data-label="<%= f.label %>"><% if (i === 0 || (i === 1 && cfg.list[0] === 'lecture_date')) { %><a href="<%= base %>/<%= r.id %>/edit"><%- cell(f, r[n]) %></a><% } else { %><%- cell(f, r[n]) %><% } %></td>
+          <% }) %>
+          <td class="actions" data-label="Actions">
+            <% (cfg.actions || []).forEach(a => { %><a class="btn btn-secondary btn-sm" href="<%= a.href(r.id) %>"><%- icon(a.icon) %> <%= a.label %></a><% }) %>
+            <a class="btn btn-ghost btn-sm" href="<%= base %>/<%= r.id %>/edit"><%- icon('edit') %> Edit</a>
+            <% if (!cfg.noDelete) { %>
+              <form method="post" action="<%= base %>/<%= r.id %>/delete" style="display:inline" data-confirm="Delete this record? This cannot be undone.">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit" style="color:var(--danger)"><%- icon('trash') %><span class="sr-only">Delete</span></button>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% if (pages > 1) { %>
+  <nav class="pagination" aria-label="Pagination">
+    <% for (let p = 1; p <= pages; p++) { %><% if (p === page) { %><span aria-current="page"><%= p %></span><% } else { %><a href="<%= base %><%= qs(keep, { page: p }) %>"><%= p %></a><% } %><% } %>
+  </nav>
+<% } %>
+<% } else { %>
+  <%- include('../partials/empty', { emptyIcon: cfg.icon, emptyTitle: 'No records yet', emptyText: cfg.noCreate ? 'Records will appear here when submitted.' : 'Use “Add new” to create the first record.' }) %>
+<% } %>

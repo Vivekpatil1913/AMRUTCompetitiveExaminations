@@ -1,0 +1,30 @@
+<%# expects: rows, base, canSee(lec) %>
+<div class="table-wrap">
+  <table class="table table-stack">
+    <thead><tr>
+      <th scope="col"><%= t('common.date') %></th><th scope="col"><%= t('common.time') %></th>
+      <th scope="col"><%= t('common.exam') %> / <%= t('common.course') %></th><th scope="col"><%= t('common.lecture') %></th>
+      <th scope="col"><%= t('common.subject') %></th><th scope="col"><%= t('common.mode') %></th>
+      <th scope="col"><%= t('common.centreOrLink') %></th><th scope="col"><%= t('common.remarks') %></th>
+    </tr></thead>
+    <tbody>
+    <% rows.forEach(r => { const pick = (a, b) => (lang === 'mr' && r[b]) ? r[b] : r[a]; %>
+      <tr class="<%= r.lecture_date === today ? 'is-today' : '' %>">
+        <td data-label="<%= t('common.date') %>" class="nowrap"><strong><%= fmt.date(r.lecture_date) %></strong><% if (r.lecture_date === today) { %> <span class="badge badge-warning"><%= t('common.today') %></span><% } %></td>
+        <td data-label="<%= t('common.time') %>" class="nowrap"><%= fmt.timeRange(r.start_time, r.end_time) %></td>
+        <td data-label="<%= t('common.exam') %>"><%= pick('exam_en', 'exam_mr') || '—' %><% if (r.course_en) { %><br><span class="small muted"><%= pick('course_en', 'course_mr') %></span><% } %></td>
+        <td data-label="<%= t('common.lecture') %>"><a href="<%= base %>/lectures/<%= r.id %>"><%= L(r, 'title') %></a><br><span class="small muted"><%= t('lectureType.' + r.lecture_type) %><% if (r.speaker_en) { %> · <%= pick('speaker_en', 'speaker_mr') %><% } %></span></td>
+        <td data-label="<%= t('common.subject') %>"><%= pick('subject_en', 'subject_mr') || '—' %></td>
+        <td data-label="<%= t('common.mode') %>"><%- include('mode-badge', { m: r.mode }) %></td>
+        <td data-label="<%= t('common.centreOrLink') %>">
+          <% if (r.mode === 'offline') { %><%= pick('centre_en', 'centre_mr') || '' %><% if (r.venue) { %><br><span class="small muted"><%= r.venue %></span><% } %>
+          <% } else if (r.online_link && canSee(r)) { %><a class="link-arrow" href="<%= r.online_link %>" target="_blank" rel="noopener"><%= t('common.join') %> <%- icon('external') %></a>
+          <% } else if (r.online_link) { %><a class="small" href="/login"><%- icon('lock') %> <%= t('common.loginToAccess') %></a>
+          <% } else { %>—<% } %>
+        </td>
+        <td data-label="<%= t('common.remarks') %>" class="small"><%= r.remarks || '—' %></td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+</div>

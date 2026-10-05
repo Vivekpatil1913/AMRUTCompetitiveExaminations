@@ -1,0 +1,31 @@
+<%- include('../partials/page-header', { lead: t('home.coursesSub') }) %>
+<section class="section">
+  <div class="container">
+    <nav class="chips mb-3" aria-label="<%= lang === 'mr' ? 'अभ्यासक्रम प्रकार' : 'Course categories' %>">
+      <a class="chip" href="/courses"<% if (!category) { %> aria-current="true"<% } %>><%= t('common.all') %></a>
+      <% categories.forEach(c => { %><a class="chip" href="/courses?category=<%= c.id %>"<% if (category === c.id) { %> aria-current="true"<% } %>><%= L(c, 'name') %></a><% }) %>
+    </nav>
+    <% if (courses.length) { %>
+      <div class="grid grid-2">
+        <% courses.forEach(c => { %>
+          <article class="card card-accent">
+            <div class="row" style="gap:.4rem">
+              <span class="badge badge-brand"><%= lang === 'mr' && c.cat_mr ? c.cat_mr : (c.cat_en || '—') %></span>
+              <%- include('../partials/mode-badge', { m: c.mode }) %>
+            </div>
+            <h3><a href="/courses/<%= c.id %>"><%= L(c, 'title') %></a></h3>
+            <% if (L(c, 'description')) { %><p class="small muted mb-0"><%= L(c, 'description') %></p><% } %>
+            <dl class="dl mt-1">
+              <dt><%= t('common.exam') %></dt><dd><%= lang === 'mr' && c.exam_mr ? c.exam_mr : (c.exam_en || '—') %></dd>
+              <dt><%= t('common.subjects') %></dt><dd><%= c.subject_names.length ? c.subject_names.join(', ') : '—' %></dd>
+              <dt><%= t('common.duration') %></dt><dd><%= c.duration_days ? c.duration_days + ' ' + t('common.days') : (lang === 'mr' ? 'बॅचनुसार' : 'As per batch') %></dd>
+            </dl>
+            <div class="foot"><a class="btn btn-primary btn-sm" href="/courses/<%= c.id %>"><%= t('common.viewDetails') %> <%- icon('arrow') %></a><% if (c.batch_count) { %><span class="small muted"><%= c.batch_count %> <%= t('common.batch') %></span><% } %></div>
+          </article>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <%- include('../partials/empty', { emptyIcon: 'book', emptyText: lang === 'mr' ? 'या प्रकारात अद्याप अभ्यासक्रम उपलब्ध नाहीत.' : 'No courses are available in this category yet.' }) %>
+    <% } %>
+  </div>
+</section>

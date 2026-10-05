@@ -1,0 +1,52 @@
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="side">
+      <span class="badge badge-brand" style="align-self:flex-start"><%= S('site_title') %></span>
+      <h2 class="mb-0"><%= t('login.title') %></h2>
+      <p class="mb-0" style="color:#f3dccb"><%= t('login.lead') %></p>
+      <ol class="steps" style="color:#fbe9da">
+        <% t('reg.steps').forEach((s, i) => { %><li class="<%= i < 3 ? 'done' : 'current' %>"><%= s %></li><% }) %>
+      </ol>
+      <div class="small" style="margin-top:auto;color:#f3dccb">
+        <%= t('login.notRegistered') %> <a href="/register" style="color:#fff;font-weight:600;text-decoration:underline"><%= t('nav.register') %></a>
+      </div>
+    </div>
+    <div class="main">
+      <div class="tabs" role="tablist" aria-label="Login method">
+        <a role="tab" aria-selected="true" href="/login"><%= t('login.id').split('/')[0].trim() %></a>
+        <button role="tab" aria-selected="false" type="button" disabled title="HOLD"><%= t('login.otp') %> <span class="hold">HOLD</span></button>
+      </div>
+      <% if (error) { %><div class="alert alert-danger mb-2" role="alert"><%- icon('alert') %><p><%= error %></p></div><% } %>
+      <form class="form" method="post" action="/login" data-loading novalidate>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field">
+          <label for="identifier"><%= t('login.id') %><span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="identifier" name="identifier" required autocomplete="username" value="<%= v.identifier || '' %>" <%- error ? 'aria-invalid="true"' : '' %>>
+        </div>
+        <div class="field">
+          <label for="password"><%= t('login.password') %><span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="password" name="password" type="password" required autocomplete="current-password" <%- error ? 'aria-invalid="true"' : '' %>>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit"><%- icon('login') %> <%= t('login.submit') %></button>
+        <div class="row-between small">
+          <a href="/login/help"><%= t('login.forgot') %></a>
+          <a href="/"><%- icon('arrow') %> <%= t('login.back') %></a>
+        </div>
+      </form>
+      <div class="integration-point mt-3 small">
+        <strong><%- icon('link') %> <%= t('hold.integration') %></strong>
+        <%= t('login.prototype') %>
+      </div>
+      <% if (demo) { %>
+        <details class="mt-2 small">
+          <summary class="muted" style="cursor:pointer">Prototype demo logins</summary>
+          <div class="table-wrap mt-1"><table class="table"><thead><tr><th scope="col">Candidate ID</th><th scope="col">Password</th><th scope="col">Profile</th></tr></thead><tbody>
+            <tr><td class="mono">DEMO-001</td><td class="mono">Demo@123</td><td>लक्षित गट · Verified</td></tr>
+            <tr><td class="mono">DEMO-002</td><td class="mono">Demo@123</td><td>Non-लक्षित गट · Verified</td></tr>
+            <tr><td class="mono">DEMO-003</td><td class="mono">Demo@123</td><td>Verification pending</td></tr>
+          </tbody></table></div>
+        </details>
+      <% } %>
+    </div>
+  </div>
+</div>

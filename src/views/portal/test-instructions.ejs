@@ -1,0 +1,32 @@
+<% const pk = (r, a, b) => (lang === 'mr' && r[b]) ? r[b] : r[a]; %>
+<div class="page-title">
+  <div><h1><%= L(test, 'title') %></h1><p><%= t('pt.testType.' + test.test_type) %><% if (test.subject_en) { %> · <%= pk(test, 'subject_en', 'subject_mr') %><% } %></p></div>
+  <a class="btn btn-ghost btn-sm" href="/portal/tests"><%= t('common.back') %></a>
+</div>
+<%- include('_test-steps', { step: 1 }) %>
+
+<div class="split">
+  <div class="stack">
+    <section class="card" aria-labelledby="ins-h">
+      <div class="card-head"><h3 id="ins-h"><%- icon('info') %> <%= t('pt.instructions') %></h3></div>
+      <p class="mb-0" style="white-space:pre-line"><%= L(test, 'instructions') || t('pt.noInstructions') %></p>
+    </section>
+    <dl class="dl">
+      <dt><%= t('common.type') %></dt><dd><%= t('pt.testType.' + test.test_type) %></dd>
+      <dt><%= t('pt.linkedLecture') %></dt><dd><% if (test.lecture_id) { %><a href="/portal/lectures/<%= test.lecture_id %>"><%= pk(test, 'lecture_en', 'lecture_mr') %></a><% } else { %>—<% } %></dd>
+      <dt><%= t('common.course') %></dt><dd><%= pk(test, 'course_en', 'course_mr') || '—' %></dd>
+      <dt><%= t('common.subject') %></dt><dd><%= pk(test, 'subject_en', 'subject_mr') || '—' %></dd>
+      <dt><%= t('pt.questions') %></dt><dd><%= test.q_count %></dd>
+      <dt><%= t('pt.lastResult') %></dt><dd><% if (test.last_attempt_id) { %><a href="/portal/attempts/<%= test.last_attempt_id %>/result"><%= test.last_correct %> / <%= test.last_total %></a><% } else { %><%= t('pt.notAttempted') %><% } %></dd>
+    </dl>
+    <% if (test.q_count) { %>
+      <form method="post" action="/portal/tests/<%= test.id %>/start">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-primary btn-lg" type="submit"><%- icon('play') %> <%= open ? t('pt.resumeTest') : t('pt.startTest') %></button>
+      </form>
+    <% } else { %>
+      <div class="alert alert-warning" role="status"><%- icon('alert') %><p><%= t('pt.noQuestionsYet') %></p></div>
+    <% } %>
+  </div>
+  <%- include('../partials/hold', { holdTitle: t('hold.label'), holdText: t('pt.testRulesHold'), holdItems: [t('pt.holdNegative'), t('pt.holdRandom'), t('pt.holdCount'), t('pt.holdScoring'), t('pt.holdTime'), t('pt.holdAttempts')] }) %>
+</div>

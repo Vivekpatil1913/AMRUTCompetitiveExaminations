@@ -1,0 +1,32 @@
+<%# expects: r (resource row with .allowed and .lock) %>
+<%
+  const typeIcon = { question_bank: 'question', video: 'video', youtube: 'youtube', guest_lecture: 'mic', study_material: 'file', pdf: 'file' }[r.resource_type];
+  const href = r.file_path ? '/files/resource/' + r.id : r.url;
+  const pick = (a, b) => (lang === 'mr' && r[b]) ? r[b] : r[a];
+  const lockText = { login: t('common.loginToAccess'), verification: t('access.verified'), lakshit: t('access.lakshit_or_permitted'), restricted: t('common.restricted') }[r.lock];
+%>
+<article class="card">
+  <div class="row" style="gap:.7rem;align-items:flex-start;flex-wrap:nowrap">
+    <span class="icon-tile"><%- icon(typeIcon) %></span>
+    <div style="min-width:0">
+      <span class="badge badge-brand"><%= t('resourceType.' + r.resource_type) %></span>
+      <h3 class="mt-1" style="font-size:1rem"><%= L(r, 'title') %></h3>
+    </div>
+  </div>
+  <% if (L(r, 'description')) { %><p class="small muted mb-0"><%= L(r, 'description') %></p><% } %>
+  <div class="meta">
+    <% if (r.exam_en) { %><span><%- icon('exam') %><%= pick('exam_en', 'exam_mr') %></span><% } %>
+    <% if (r.subject_en) { %><span><%- icon('book') %><%= pick('subject_en', 'subject_mr') %></span><% } %>
+    <% if (r.topic_en) { %><span><%- icon('layers') %><%= pick('topic_en', 'topic_mr') %></span><% } %>
+  </div>
+  <div class="foot">
+    <% if (r.allowed) { %>
+      <a class="btn btn-primary btn-sm" href="<%= href %>"<%- r.file_path ? '' : ' target="_blank" rel="noopener"' %>><%- icon(r.file_path ? 'download' : 'external') %> <%= r.file_path ? t('common.download') : t('common.open') %></a>
+      <% if (r.access_level !== 'public') { %><span class="small muted"><%- icon('lock') %> <%= t('access.' + r.access_level) %></span><% } %>
+    <% } else if (r.lock === 'login') { %>
+      <a class="btn btn-secondary btn-sm" href="/login"><%- icon('lock') %> <%= t('common.loginToAccess') %></a>
+    <% } else { %>
+      <span class="badge badge-lock"><%- icon('lock') %> <%= lockText %></span>
+    <% } %>
+  </div>
+</article>

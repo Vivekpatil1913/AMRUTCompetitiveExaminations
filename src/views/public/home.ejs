@@ -1,0 +1,259 @@
+<%
+  const hero = C('hero'), intro = C('intro');
+  const pk = (r, a, b) => (lang === 'mr' && r[b]) ? r[b] : r[a];
+  const examIcons = ['exam', 'building', 'rupee', 'file', 'shield', 'layers'];
+  const resTiles = [
+    ['question_bank', 'question'], ['video', 'video'], ['youtube', 'youtube'], ['guest_lecture', 'mic'], ['study_material', 'file'], ['pdf', 'download'],
+  ];
+%>
+<!-- 1. HERO -->
+<section class="hero">
+  <div class="container">
+    <div>
+      <span class="kicker"><%- icon('shield') %> <%= S('gov_label') %> · AMRUT</span>
+      <h1><%= L(hero, 'title') %></h1>
+      <p class="lead"><%= L(hero, 'body') %></p>
+      <div class="ctas">
+        <a class="btn btn-register btn-lg" href="/register"><%= t('nav.register') %> <%- icon('arrow') %></a>
+        <a class="btn btn-outline btn-lg" href="/login"><%- icon('login') %> <%= t('nav.login') %></a>
+      </div>
+      <p class="note"><%- icon('info') %><span><%= lang === 'mr' ? 'नोंदणी व पडताळणी महाअमृत पोर्टलद्वारे केली जाते. पडताळणीनंतर अभ्यास पोर्टलवर लॉगिन करा.' : 'Registration and verification are done through the Mahaamrut portal. After verification, login to the study portal.' %></span></p>
+    </div>
+    <aside class="join-card" aria-labelledby="how-title">
+      <h3 id="how-title"><%= t('home.howTitle') %></h3>
+      <ol class="steps">
+        <% t('home.how').forEach(s => { %><li><%= s %></li><% }) %>
+      </ol>
+      <a class="btn btn-secondary btn-block mt-2" href="/journey"><%= lang === 'mr' ? 'संपूर्ण प्रवास पहा' : 'View complete journey' %> <%- icon('chevron') %></a>
+    </aside>
+  </div>
+</section>
+
+<!-- 2. PROGRAMME INTRODUCTION -->
+<section class="section" id="intro">
+  <div class="container split">
+    <div>
+      <div class="section-head"><div><h2><%= L(intro, 'title') %></h2></div></div>
+      <% String(L(intro, 'body')).split('\n\n').forEach(p => { %><p><%= p %></p><% }) %>
+      <a class="link-arrow" href="/about"><%= t('common.viewDetails') %> <%- icon('arrow') %></a>
+    </div>
+    <div class="card card-flat">
+      <h3 class="mb-1"><%= lang === 'mr' ? 'कार्यक्रमात काय उपलब्ध आहे' : 'What the programme provides' %></h3>
+      <ul class="offer-list">
+        <% t('home.offer').forEach(o => { %><li><%- icon('check') %><span><%= o %></span></li><% }) %>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. COMPETITIVE EXAMINATIONS -->
+<section class="section section-alt" id="examinations">
+  <div class="container">
+    <div class="section-head">
+      <div><h2><%= t('home.examsTitle') %></h2><p><%= t('home.examsSub') %></p></div>
+      <a class="link-arrow" href="/examinations"><%= t('common.viewAll') %> <%- icon('arrow') %></a>
+    </div>
+    <% if (exams.length) { %>
+    <div class="grid grid-3">
+      <% exams.forEach((e, i) => { %>
+        <a class="card card-link exam-card" href="/examinations/<%= e.id %>">
+          <span class="icon-tile"><%- icon(examIcons[i % examIcons.length]) %></span>
+          <span class="body">
+            <h3><%= L(e, 'name') %></h3>
+            <p><%= L(e, 'description') %></p>
+            <span class="small muted"><%= e.subject_count %> <%= t('common.subjects') %></span>
+          </span>
+        </a>
+      <% }) %>
+    </div>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'exam' }) %><% } %>
+  </div>
+</section>
+
+<!-- 4. COURSES / TRAINING PROGRAMMES -->
+<section class="section" id="courses">
+  <div class="container">
+    <div class="section-head">
+      <div><h2><%= t('home.coursesTitle') %></h2><p><%= t('home.coursesSub') %></p></div>
+      <a class="link-arrow" href="/courses"><%= t('common.viewAll') %> <%- icon('arrow') %></a>
+    </div>
+    <div class="grid grid-4">
+      <% categories.forEach(c => { %>
+        <a class="card card-link card-accent" href="/courses?category=<%= c.id %>">
+          <h3><%= L(c, 'name') %></h3>
+          <% if (L(c, 'description')) { %><p class="small muted mb-0"><%= L(c, 'description') %></p><% } %>
+          <span class="foot small muted"><%- icon('book') %> <%= c.course_count %> <%= lang === 'mr' ? 'अभ्यासक्रम' : (c.course_count === 1 ? 'course' : 'courses') %></span>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- 5. UPCOMING TRAINING / TIMETABLE -->
+<section class="section section-alt" id="timetable">
+  <div class="container">
+    <div class="section-head">
+      <div><h2><%= t('home.ttTitle') %></h2><p><%= t('home.ttSub') %></p></div>
+      <a class="link-arrow" href="/timetable"><%= t('common.viewAll') %> <%- icon('arrow') %></a>
+    </div>
+    <% if (upcoming.length) { %>
+      <%- include('../partials/timetable-table', { rows: upcoming, base: '' }) %>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'calendar' }) %><% } %>
+  </div>
+</section>
+
+<!-- 6. GUEST LECTURES / SPECIAL LECTURES -->
+<section class="section" id="lectures">
+  <div class="container">
+    <div class="section-head">
+      <div><h2><%= t('home.lecTitle') %></h2><p><%= t('home.lecSub') %></p></div>
+      <a class="link-arrow" href="/lectures"><%= t('common.viewAll') %> <%- icon('arrow') %></a>
+    </div>
+    <div class="chips mb-2">
+      <% ['regular', 'guest', 'guidance', 'special'].forEach(k => { %><a class="chip" href="/lectures?type=<%= k %>"><%= t('lectureType.' + k) %></a><% }) %>
+      <a class="chip" href="/lectures?mode=online"><%= t('common.online') %></a>
+      <a class="chip" href="/lectures?mode=offline"><%= t('common.offline') %></a>
+    </div>
+    <% if (featured.length) { %>
+      <div class="grid grid-2">
+        <% featured.forEach(lec => { %><%- include('../partials/lecture-card', { lec, base: '' }) %><% }) %>
+      </div>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'mic' }) %><% } %>
+  </div>
+</section>
+
+<!-- 7. स्पर्धा परीक्षा यात्रा -->
+<section class="section section-alt" id="yatra">
+  <div class="container split">
+    <div>
+      <div class="section-head">
+        <div><h2><%= t('nav.yatra') %></h2><p><%= t('home.yatraSub') %></p></div>
+        <a class="link-arrow" href="/yatra"><%= t('common.viewAll') %> <%- icon('arrow') %></a>
+      </div>
+      <% if (yatra.length) { %>
+      <ol class="timeline">
+        <% yatra.forEach(y => { %>
+          <li class="<%= y.schedule_date === today ? 'is-today' : '' %>">
+            <div class="date-tile" aria-hidden="true"><div class="m"><%= fmt.month(y.schedule_date) %></div><div class="d"><%= fmt.day(y.schedule_date) %></div></div>
+            <div class="body">
+              <h4><%= y.person_name %></h4>
+              <div class="small muted row" style="gap:.3rem 1rem">
+                <span><%- icon('calendar') %> <%= fmt.date(y.schedule_date) %><% if (y.schedule_date === today) { %> <span class="badge badge-warning"><%= t('common.today') %></span><% } %></span>
+                <span><%- icon('clock') %> <%= fmt.timeRange(y.start_time, y.end_time) %></span>
+                <span><%- icon('map') %> <%= y.place %></span>
+              </div>
+              <% if (y.remarks) { %><div class="small mt-1"><%= y.remarks %></div><% } %>
+            </div>
+          </li>
+        <% }) %>
+      </ol>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'route' }) %><% } %>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <h3><%- icon('users') %> <%= t('home.advisoryTitle') %></h3>
+        <% advisory.slice(0, 6).forEach(p => { %>
+          <div class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:.7rem">
+            <span class="avatar" style="width:38px;height:38px;font-size:.95rem"><% if (p.photo) { %><img src="<%= p.photo %>" alt=""><% } else { %><%= L(p, 'name').charAt(0) %><% } %></span>
+            <div><strong style="font-size:.9rem"><%= L(p, 'name') %></strong><div class="small muted"><%= L(p, 'designation') %></div></div>
+          </div>
+        <% }) %>
+        <p class="small muted mb-0 mt-1"><span class="hold">HOLD</span> <%= t('home.advisoryNote') %></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. LEARNING RESOURCES -->
+<section class="section" id="resources">
+  <div class="container">
+    <div class="section-head">
+      <div><h2><%= t('home.resTitle') %></h2><p><%= t('home.resSub') %></p></div>
+      <a class="link-arrow" href="/resources"><%= t('common.viewAll') %> <%- icon('arrow') %></a>
+    </div>
+    <div class="grid grid-auto-sm">
+      <% resTiles.forEach(([k, ic]) => { %>
+        <a class="card card-link quick-card" href="<%= k === 'study_material' ? '/study-material' : '/resources?type=' + k %>">
+          <span class="icon-tile"><%- icon(ic) %></span>
+          <span class="label"><%= t('resourceType.' + k) %></span>
+          <span class="sub"><%= resCounts[k] || 0 %> <%= lang === 'mr' ? 'संसाधने' : 'items' %></span>
+        </a>
+      <% }) %>
+    </div>
+    <p class="small muted mt-2 mb-0"><%- icon('lock') %> <%= lang === 'mr' ? 'काही संसाधने केवळ लॉगिन / पडताळणीनंतर उपलब्ध आहेत. सर्व यूट्यूब साहित्य खासगी नाही.' : 'Some resources require candidate login / verification. Not all YouTube content is private.' %></p>
+  </div>
+</section>
+
+<!-- 9. STUDY MATERIAL -->
+<section class="section section-alt" id="study-material">
+  <div class="container split">
+    <div>
+      <div class="section-head"><div><h2><%= t('home.smTitle') %></h2><p><%= t('home.smSub') %></p></div></div>
+      <ol class="steps-h" aria-label="Structure">
+        <li class="done"><%= t('common.exam') %></li><li class="done"><%= t('common.course') %></li><li class="done"><%= t('common.subject') %></li><li class="done"><%= t('common.topic') %></li><li class="current">PDF / <%= lang === 'mr' ? 'दस्तऐवज' : 'Document' %></li>
+      </ol>
+      <% if (smSubjects.length) { %>
+        <div class="chips mb-2"><% smSubjects.forEach(s => { %><span class="chip"><%- icon('file') %> <%= s.short_name ? s.short_name + ' · ' : '' %><%= L(s, 'name') %></span><% }) %></div>
+      <% } %>
+      <a class="btn btn-primary" href="/study-material"><%- icon('book') %> <%= t('nav.studyMaterial') %></a>
+    </div>
+    <div class="stack">
+      <div class="alert alert-info"><%- icon('lock') %><p><%= lang === 'mr' ? 'केवळ नोंदणीकृत लक्षित गट उमेदवार किंवा प्रशासकाने विशेष परवानगी दिलेल्या उमेदवारांसाठी उपलब्ध.' : 'Available only for registered लक्षित गट candidates or candidates specially permitted by Admin.' %></p></div>
+      <%- include('../partials/hold', { holdText: lang === 'mr' ? 'अभ्यास साहित्यासाठी सशुल्क सदस्यता – चर्चा आवश्यक (अंमलात आणलेले नाही).' : 'Paid subscription for study material – to be discussed (not implemented).' }) %>
+    </div>
+  </div>
+</section>
+
+<!-- 10. ANNOUNCEMENTS & 11. IMPORTANT LINKS -->
+<section class="section" id="announcements">
+  <div class="container split">
+    <div>
+      <div class="section-head">
+        <div><h2><%= t('home.annTitle') %></h2></div>
+        <a class="link-arrow" href="/announcements"><%= t('common.viewAll') %> <%- icon('arrow') %></a>
+      </div>
+      <% if (announcements.length) { %>
+        <div class="table-wrap">
+          <table class="table table-stack">
+            <thead><tr><th scope="col"><%= t('common.type') %></th><th scope="col"><%= lang === 'mr' ? 'घोषणा' : 'Announcement' %></th><th scope="col"><%= t('common.date') %></th></tr></thead>
+            <tbody>
+              <% announcements.forEach(a => { %>
+                <tr>
+                  <td data-label="<%= t('common.type') %>"><span class="badge badge-brand"><%= t('annCat.' + a.category) %></span></td>
+                  <td data-label="<%= lang === 'mr' ? 'घोषणा' : 'Announcement' %>"><a href="<%= a.link_url || '/announcements#a' + a.id %>"><%= L(a, 'title') %></a></td>
+                  <td data-label="<%= t('common.date') %>" class="nowrap small"><%= fmt.date(a.publish_from || a.created_at) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'bell' }) %><% } %>
+    </div>
+    <div id="important-links">
+      <div class="section-head">
+        <div><h2><%= t('home.linksTitle') %></h2></div>
+        <a class="link-arrow" href="/important-links"><%= t('common.viewAll') %> <%- icon('arrow') %></a>
+      </div>
+      <div class="card">
+        <% links.forEach(l => { %>
+          <a class="row-between" style="padding:.45rem 0;border-bottom:1px solid var(--line-soft);flex-wrap:nowrap" href="<%= l.url %>" target="_blank" rel="noopener">
+            <span><%- icon('link') %> <%= L(l, 'title') %></span><%- icon('external', 'muted') %>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Support / Contribute -->
+<section class="section-sm section-alt">
+  <div class="container">
+    <div class="card" style="flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;border-left:5px solid var(--amrut-400)">
+      <div class="row" style="flex-wrap:nowrap;align-items:flex-start">
+        <span class="icon-tile"><%- icon('heart') %></span>
+        <div><h3><%= L(C('contribute'), 'title') %></h3><p class="small muted mb-0"><%= L(C('contribute'), 'body') %></p></div>
+      </div>
+      <a class="btn btn-primary" href="/contribute"><%= t('nav.contribute') %> <%- icon('arrow') %></a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,43 @@
+<%
+  const mr = lang === 'mr';
+  const courseHref = firstCourse ? '/portal/courses/' + firstCourse.course_id : '/portal/courses';
+  // [label, href, external?, note]
+  const nodes = [
+    [mr ? 'उमेदवार संकेतस्थळाला भेट देतो – मुख्यपृष्ठ' : 'User visits website – Landing Page', '/', false],
+    [mr ? '“नोंदणी / अर्ज करा” वर क्लिक' : 'Clicks “REGISTER / APPLY”', '/register', false],
+    [mr ? 'महाअमृत पोर्टल' : 'Mahaamrut Portal', S('mahaamrut_portal_url'), true],
+    [mr ? 'नोंदणी / अर्ज' : 'Registration / Application', S('mahaamrut_register_url'), true],
+    [mr ? 'महाअमृत पडताळणी' : 'Mahaamrut Verification', null, true, mr ? 'महाअमृतमार्फत (या पोर्टलच्या बाहेर)' : 'Done by Mahaamrut (outside this portal)'],
+    [mr ? 'यशस्वी पडताळणी' : 'Successful Verification', '/journey/verified', true, mr ? 'सिम्युलेशन स्क्रीन' : 'Simulation screen'],
+    [mr ? 'उमेदवार अभ्यास पोर्टलवर परततो' : 'Candidate returns / accesses the Competitive Examination Portal', '/journey/verified', true, t('hold.integration')],
+    [mr ? 'लॉगिन' : 'LOGIN', '/login', false],
+    [mr ? 'उमेदवार डॅशबोर्ड' : 'Candidate Dashboard', '/portal', false],
+    [mr ? 'माझा अभ्यासक्रम' : 'MY COURSE', courseHref, false],
+    [mr ? 'परीक्षा' : 'EXAMINATION', courseHref + '?tab=subjects', false],
+    [mr ? 'विषय' : 'SUBJECT', '/portal/subjects', false],
+    [mr ? 'अभ्यास साहित्य' : 'STUDY MATERIAL', '/portal/study-material', false],
+    [mr ? 'व्याख्यान' : 'LECTURE', '/portal/lectures', false],
+    [mr ? 'वेळापत्रक' : 'TIMETABLE', '/portal/timetable', false],
+    [mr ? 'प्रश्नसंच' : 'QUESTION BANK', '/portal/question-bank', false],
+    [mr ? 'ऑनलाइन चाचणी' : 'ONLINE TEST', '/portal/tests', false],
+    [mr ? 'निकाल' : 'RESULT', '/portal/results', false],
+  ];
+%>
+<%- include('../partials/page-header', { lead: mr ? 'संपूर्ण उमेदवार प्रवासाचे प्रात्यक्षिक. निळ्या चौकटी महाअमृत / बाह्य टप्पे दर्शवतात.' : 'Click through the complete candidate journey. Blue dashed steps are Mahaamrut / external steps; the integration mechanism is not yet finalised.' }) %>
+<section class="section">
+  <div class="container">
+    <% if (demo) { %>
+      <div class="alert alert-warning mb-3" style="max-width:760px;margin-inline:auto"><%- icon('info') %><p><%= mr ? 'प्रोटोटाइप लॉगिन:' : 'Prototype login:' %> <strong class="mono">DEMO-001</strong> / <strong class="mono">Demo@123</strong> (लक्षित गट, verified)</p></div>
+    <% } %>
+    <div class="journey">
+      <% nodes.forEach(([label, href, ext, note], i) => { %>
+        <% if (i) { %><div class="arrow" aria-hidden="true">↓</div><% } %>
+        <div class="node<%= ext ? ' ext' : '' %>">
+          <span class="n"><%= i + 1 %></span>
+          <div><strong><%= label %></strong><% if (note) { %><div class="small"><%= note %></div><% } %></div>
+          <% if (href) { %><a class="btn <%= ext ? 'btn-outline' : 'btn-secondary' %> btn-sm go" href="<%= href %>"<%- /^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '' %>><%= t('common.open') %> <%- icon(/^https?:/.test(href) ? 'external' : 'chevron') %></a><% } %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>

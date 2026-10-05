@@ -1,0 +1,28 @@
+<div class="page-title">
+  <div><nav aria-label="Breadcrumb"><ol class="breadcrumb"><li><a href="/admin">Admin</a></li><li><a href="/admin/tests">Tests</a></li><li aria-current="page">Questions</li></ol></nav>
+  <h1><%= test.title_en %></h1><p>Select the MCQs for this test. Order follows the list (selected first).</p></div>
+  <div class="row"><a class="btn btn-ghost" href="/admin/tests/<%= test.id %>/edit"><%- icon('edit') %> Edit test</a><a class="btn btn-secondary" href="/admin/questions/new"><%- icon('plus') %> New question</a></div>
+</div>
+<div class="alert alert-warning mb-2"><%- icon('info') %><p>HOLD: question count, randomisation, negative marking and scoring rules are pending confirmation. Questions are shown in this fixed order; score = correct answers.</p></div>
+<% if (test.subject_id) { %><p class="small"><% if (subjectOnly) { %>Showing questions of this test's subject. <a href="?all=1">Show all questions</a><% } else { %>Showing all questions. <a href="?">Only this subject</a><% } %></p><% } %>
+<form method="post" action="/admin/tests/<%= test.id %>/questions">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <% if (questions.length) { %>
+  <div class="table-wrap">
+    <table class="table table-stack">
+      <thead><tr><th scope="col">Use</th><th scope="col">Question</th><th scope="col">Subject</th><th scope="col">Answer</th></tr></thead>
+      <tbody>
+        <% questions.forEach(q => { %>
+          <tr>
+            <td data-label="Use"><label class="check"><input type="checkbox" name="question_id" value="<%= q.id %>" <%= q.selected ? 'checked' : '' %>><span class="sr-only">Use question <%= q.id %></span></label></td>
+            <td data-label="Question"><%= q.question_en %></td>
+            <td data-label="Subject"><%= q.subject || '—' %></td>
+            <td data-label="Answer" class="mono"><%= q.correct_option.toUpperCase() %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <div class="form-actions mt-2"><button class="btn btn-primary" type="submit"><%- icon('check') %> Save selection</button></div>
+  <% } else { %><%- include('../partials/empty', { emptyIcon: 'question', emptyTitle: 'No questions available', emptyText: 'Add MCQs in the Question Bank first.' }) %><% } %>
+</form>

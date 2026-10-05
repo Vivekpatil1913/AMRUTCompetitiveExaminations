@@ -1,0 +1,24 @@
+<div class="page-title">
+  <div><h1><%= t('pt.testResult') %></h1><p><%= L(attempt, 'title') %> · <%= fmt.datetime(attempt.submitted_at) %></p></div>
+  <div class="row">
+    <a class="btn btn-secondary btn-sm" href="/portal/results"><%- icon('chart') %> <%= t('portal.results') %></a>
+    <a class="btn btn-ghost btn-sm" href="/portal/tests"><%= t('portal.tests') %></a>
+  </div>
+</div>
+<%- include('_test-steps', { step: 4 }) %>
+
+<div class="score-tiles mb-2" role="status">
+  <div class="score-tile"><div class="v"><%= attempt.correct %> / <%= attempt.total %></div><div class="k"><%= t('pt.score') %></div></div>
+  <div class="score-tile ok"><div class="v"><%= attempt.correct %></div><div class="k"><%= t('pt.correct') %></div></div>
+  <div class="score-tile bad"><div class="v"><%= attempt.incorrect %></div><div class="k"><%= t('pt.incorrect') %></div></div>
+  <div class="score-tile"><div class="v"><%= attempt.unanswered %></div><div class="k"><%= t('pt.unanswered') %></div></div>
+</div>
+<p class="small muted"><%- icon('info') %> <%= t('pt.scoreNote') %> <span class="hold"><%= t('status.hold') %></span></p>
+
+<h2 class="mt-3 mb-2" style="font-size:1.15rem"><%= t('pt.answerReview') %></h2>
+<% if (!review.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'question', emptyTitle: t('common.noResults'), emptyText: '' }) %>
+<% } %>
+<% review.forEach((q, i) => { %>
+  <%- include('_mcq', { q, i, mcqName: 'r_' + q.id, picked: q.selected_option || null, reveal: true }) %>
+<% }) %>

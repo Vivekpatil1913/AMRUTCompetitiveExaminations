@@ -1,0 +1,29 @@
+<%# One MCQ. expects: q, i (index), mcqName, picked ('a'..'d' or null), reveal (show correct answers) %>
+<div class="mcq" role="radiogroup" aria-labelledby="qt-<%= q.id %>">
+  <div class="qno"><%= t('pt.question') %> <%= i + 1 %>
+    <% if (reveal) { %>
+      <% if (!picked) { %><span class="badge badge-neutral"><%= t('pt.unanswered') %></span>
+      <% } else if (picked === q.correct_option) { %><span class="badge badge-success"><%- icon('check') %> <%= t('pt.correct') %></span>
+      <% } else { %><span class="badge badge-danger"><%- icon('x') %> <%= t('pt.incorrect') %></span><% } %>
+    <% } %>
+  </div>
+  <div class="qtext" id="qt-<%= q.id %>"><%= L(q, 'question') %></div>
+  <div class="opts">
+    <% ['a', 'b', 'c', 'd'].forEach(k => { const text = q['option_' + k]; if (!text) return;
+         const cls = reveal ? (k === q.correct_option ? ' correct' : (k === picked ? ' wrong' : '')) : ''; %>
+      <label class="opt<%= cls %>">
+        <input type="radio" name="<%= mcqName %>" value="<%= k %>"<%= picked === k ? ' checked' : '' %><%= reveal ? ' disabled' : '' %>>
+        <span class="key"><%= k.toUpperCase() %>.</span> <span><%= text %></span>
+        <% if (reveal && k === q.correct_option) { %><span class="sr-only">(<%= t('pt.correctAnswer') %>)</span><% } %>
+        <% if (reveal && k === picked && k !== q.correct_option) { %><span class="sr-only">(<%= t('pt.yourAnswer') %>)</span><% } %>
+      </label>
+    <% }) %>
+  </div>
+  <% if (reveal) { %>
+    <div class="explain">
+      <strong><%= t('pt.correctAnswer') %>:</strong> <%= q.correct_option.toUpperCase() %>. <%= q['option_' + q.correct_option] %>
+      <% if (picked && picked !== q.correct_option) { %> · <strong><%= t('pt.yourAnswer') %>:</strong> <%= picked.toUpperCase() %><% } %>
+      <% if (q.explanation) { %><br><%= q.explanation %><% } %>
+    </div>
+  <% } %>
+</div>

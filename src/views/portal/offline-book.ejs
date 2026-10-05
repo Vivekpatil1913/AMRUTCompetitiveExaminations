@@ -1,0 +1,107 @@
+<%
+  const pk = (a, c) => (lang === 'mr' && batch[c]) ? batch[c] : batch[a];
+  const dep = batch.deposit_applicability;
+  const err = (k) => errors[k] ? ' aria-invalid="true" aria-describedby="err-' + k + '"' : '';
+  const errKeys = Object.keys(errors);
+  const acc = C('accommodation');
+%>
+<div class="page-title">
+  <div><h1><%= t('pt.bookTitle') %></h1><p><%= pk('course_en', 'course_mr') %> · <%= batch.name %></p></div>
+  <a class="btn btn-ghost btn-sm" href="/portal/offline"><%= t('common.back') %></a>
+</div>
+
+<ol class="steps-h" aria-label="<%= t('pt.bookingSteps') %>">
+  <li class="done"><%= t('pt.bstepCourse') %></li>
+  <li class="done"><%= t('pt.bstepBatch') %></li>
+  <li class="done"><%= t('pt.bstepCentre') %></li>
+  <li class="current" aria-current="step"><%= t('pt.accommodation') %></li>
+  <li><%= t('pt.deposit') %></li>
+  <li><%= t('pt.bstepProof') %></li>
+  <li><%= t('common.submit') %></li>
+</ol>
+
+<% if (errKeys.length) { %>
+  <div class="alert alert-danger mb-2" role="alert" tabindex="-1">
+    <%- icon('alert') %>
+    <div><p><strong><%= t('pt.fixErrors') %></strong></p>
+      <ul class="mb-0"><% errKeys.forEach(k => { %><li><a href="#<%= k === 'accommodation_required' ? 'acc-yes' : k %>"><%= errors[k] %></a></li><% }) %></ul></div>
+  </div>
+<% } %>
+
+<form class="form stack" method="post" enctype="multipart/form-data" action="/portal/offline/book/<%= batch.id %>?_csrf=<%= csrfToken %>" data-loading>
+  <fieldset class="fieldset">
+    <legend><%= t('pt.selectedBatch') %></legend>
+    <dl class="dl">
+      <dt><%= t('common.course') %></dt><dd><%= pk('course_en', 'course_mr') %></dd>
+      <dt><%= t('common.exam') %></dt><dd><%= pk('exam_en', 'exam_mr') || '—' %></dd>
+      <dt><%= t('common.batch') %></dt><dd><%= batch.name %></dd>
+      <dt><%= t('common.centre') %></dt><dd><%= batch.centre_en ? ((batch.centre_no ? batch.centre_no + ' – ' : '') + pk('centre_en', 'centre_mr')) : '—' %><% if (batch.centre_address) { %><br><span class="small muted"><%= batch.centre_address %></span><% } %></dd>
+      <dt><%= t('common.period') %></dt><dd><% if (batch.start_date && batch.end_date) { %><%= fmt.date(batch.start_date) %> – <%= fmt.date(batch.end_date) %> (<%= t('common.duration') %>: <%= batch.period_days %> <%= t('common.days') %>)<% } else { %>—<% } %></dd>
+    </dl>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend><%= t('pt.contactDetails') %></legend>
+    <div class="form-grid">
+      <div class="field">
+        <label for="contact_mobile"><%= t('pt.mobile') %> <span class="req" aria-hidden="true">*</span></label>
+        <input class="input" type="tel" id="contact_mobile" name="contact_mobile" value="<%= values.contact_mobile %>" required autocomplete="tel" maxlength="20"<%- err('contact_mobile') %>>
+        <% if (errors.contact_mobile) { %><span class="field-error" id="err-contact_mobile"><%= errors.contact_mobile %></span><% } %>
+      </div>
+      <div class="field">
+        <label for="contact_email"><%= t('pt.email') %> <span class="small muted">(<%= t('common.optional') %>)</span></label>
+        <input class="input" type="email" id="contact_email" name="contact_email" value="<%= values.contact_email %>" autocomplete="email" maxlength="200"<%- err('contact_email') %>>
+        <% if (errors.contact_email) { %><span class="field-error" id="err-contact_email"><%= errors.contact_email %></span><% } %>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="fieldset"<%- errors.accommodation_required ? ' aria-describedby="err-accommodation_required"' : '' %>>
+    <legend><%= t('pt.accommodationRequired') %> <span class="req" aria-hidden="true">*</span><span class="sr-only"> (<%= t('common.required') %>)</span></legend>
+    <div class="choice-group">
+      <label class="choice"><input type="radio" id="acc-yes" name="accommodation_required" value="yes" required<%= values.accommodation_required === 'yes' ? ' checked' : '' %><%= batch.accommodation_available ? '' : ' disabled' %>><span><%= t('common.yes') %></span></label>
+      <label class="choice"><input type="radio" id="acc-no" name="accommodation_required" value="no" required<%= values.accommodation_required === 'no' ? ' checked' : '' %>><span><%= t('common.no') %></span></label>
+    </div>
+    <% if (!batch.accommodation_available) { %>
+      <p class="help mt-1"><%- icon('info') %> <%= t('pt.accommodationNA') %></p>
+    <% } %>
+    <% if (errors.accommodation_required) { %><span class="field-error" id="err-accommodation_required"><%= errors.accommodation_required %></span><% } %>
+    <% if (batch.accommodation_available) { %>
+      <div class="card card-flat mt-2" data-show-when="accommodation_required=yes">
+        <h4><%- icon('bed') %> <%= L(acc, 'title') || t('pt.accommodation') %> <span class="hold"><%= t('status.hold') %></span></h4>
+        <p class="small mb-0" style="white-space:pre-line"><%= L(acc, 'body') || t('pt.accommodationHold') %></p>
+      </div>
+    <% } %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend><%= t('pt.securityDeposit') %></legend>
+    <% if (dep === 'hold') { %>
+      <%- include('../partials/hold', { holdTitle: t('pt.depositHoldTitle'), holdText: t('pt.depositHoldText') }) %>
+    <% } else if (dep === 'not_applicable') { %>
+      <p class="mb-0"><%- icon('check') %> <%= t('pt.noDeposit') %></p>
+    <% } else { %>
+      <% if (dep === 'accommodation_only') { %>
+        <p class="help"><%- icon('info') %> <%= t('pt.depositAccOnlyHelp') %></p>
+        <div data-show-when="accommodation_required=yes">
+          <%- include('_payment', { batch, values, errors, reqAttr: 'data-req' }) %>
+        </div>
+      <% } else { %>
+        <%- include('_payment', { batch, values, errors, reqAttr: 'required' }) %>
+      <% } %>
+    <% } %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend><%= t('common.remarks') %></legend>
+    <div class="field">
+      <label for="remarks"><%= t('pt.remarksLabel') %> <span class="small muted">(<%= t('common.optional') %>)</span></label>
+      <textarea class="textarea" id="remarks" name="remarks" rows="3" maxlength="1000"><%= values.remarks %></textarea>
+    </div>
+  </fieldset>
+
+  <div class="form-actions">
+    <button class="btn btn-primary btn-lg" type="submit"><%- icon('check') %> <%= t('pt.submitBooking') %></button>
+    <a class="btn btn-ghost" href="/portal/offline"><%= t('common.cancel') %></a>
+  </div>
+</form>

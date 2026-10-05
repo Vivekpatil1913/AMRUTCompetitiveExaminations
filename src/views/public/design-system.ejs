@@ -1,0 +1,133 @@
+<%
+  const colors = [
+    ['--amrut-400', '#dd792e', 'AMRUT orange – brand accent (decorative, large text)'],
+    ['--amrut-500', '#cd5a21', 'Deep orange – labels, date tiles'],
+    ['--amrut-600', '#b4501d', 'Primary action (AA contrast with white)'],
+    ['--amrut-700', '#a25726', 'Hover / headings accent'],
+    ['--amrut-800', '#7a3c17', 'Hero heading, emphasis'],
+    ['--amrut-900', '#4a230d', 'Government top bar, footer'],
+    ['--amrut-100', '#fff7ed', 'Cream surface'],
+    ['--amrut-200', '#f6ede4', 'Table header, soft fill'],
+    ['--line', '#eadbd0', 'Borders'],
+    ['--ink', '#1f1f1f', 'Headings'],
+    ['--text', '#2c2c2c', 'Body text'],
+    ['--muted', '#5a5a5a', 'Secondary text'],
+    ['--success', '#15803d', 'Success'], ['--info', '#1d4ed8', 'Information / online'], ['--warning', '#9a4a07', 'Warning'], ['--danger', '#b91c1c', 'Error'],
+  ];
+  const sec = (id, name) => `<h2 id="${id}" class="mt-4" style="scroll-margin-top:70px">${name}</h2>`;
+%>
+<%- include('../partials/page-header', { lead: 'Reusable AMRUT components used across the public website, candidate portal and admin panel. Light, government-portal style; no dark mode; Marathi + English ready.' }) %>
+<section class="section">
+  <div class="container">
+    <nav class="chips" aria-label="Sections">
+      <% ['Colours','Typography','Buttons','Badges','Alerts','Forms','Tables','Tabs','Cards','Progress','States','Modal'].forEach(s => { %><a class="chip" href="#<%= s.toLowerCase() %>"><%= s %></a><% }) %>
+    </nav>
+
+    <%- sec('colours', 'Colours') %>
+    <div class="grid grid-auto-sm">
+      <% colors.forEach(([v, hex, use]) => { %>
+        <div class="swatch"><div class="chip-color" style="background:<%= hex %>"></div><div class="info"><strong class="mono"><%= v %></strong><div class="mono muted"><%= hex %></div><div><%= use %></div></div></div>
+      <% }) %>
+    </div>
+
+    <%- sec('typography', 'Typography') %>
+    <div class="card">
+      <p class="small muted mb-0">Headings: <strong>Baloo 2</strong> · Body: <strong>Poppins</strong> (both support Devanagari)</p>
+      <h1 class="mb-0">विविध स्पर्धा परीक्षा पूर्व प्रशिक्षण कार्यक्रम</h1>
+      <h2 class="mb-0">Heading 2 – Competitive Examinations</h2>
+      <h3 class="mb-0">Heading 3 – अभ्यास साहित्य</h3>
+      <p class="mb-0">Body text – Structured preparation, online and offline training, lectures and learning resources. स्पर्धा परीक्षा इच्छुक उमेदवारांसाठी नियोजनबद्ध तयारी.</p>
+      <p class="small muted mb-0">Small / muted text – helper and metadata.</p>
+    </div>
+
+    <%- sec('buttons', 'Buttons') %>
+    <div class="card"><div class="row">
+      <a class="btn btn-register" href="#">REGISTER / APPLY</a>
+      <button class="btn btn-primary" type="button">Primary</button>
+      <button class="btn btn-secondary" type="button">Secondary</button>
+      <button class="btn btn-outline" type="button">Outline</button>
+      <button class="btn btn-ghost" type="button">Ghost</button>
+      <button class="btn btn-danger" type="button">Danger</button>
+      <button class="btn btn-primary btn-sm" type="button">Small</button>
+      <button class="btn btn-primary btn-lg" type="button">Large</button>
+      <button class="btn btn-primary" type="button" disabled>Disabled</button>
+      <button class="btn btn-primary" type="button"><span class="spinner" style="width:16px;height:16px;border-width:2px"></span> Loading</button>
+    </div></div>
+
+    <%- sec('badges', 'Badges & status indicators') %>
+    <div class="card"><div class="row">
+      <span class="badge badge-online">ONLINE</span><span class="badge badge-offline">OFFLINE</span><span class="badge badge-both">ONLINE / OFFLINE</span>
+      <span class="badge badge-brand">Guest Lecture</span><span class="badge badge-success">Verified</span><span class="badge badge-warning">Pending</span>
+      <span class="badge badge-danger">Rejected</span><span class="badge badge-info">Info</span><span class="badge badge-neutral">Closed</span><span class="badge badge-lock"><%- icon('lock') %> लक्षित गट</span>
+      <span class="hold">HOLD</span>
+      <span class="status-dot ok">Verified</span><span class="status-dot wait">Pending</span><span class="status-dot bad">Rejected</span>
+    </div></div>
+
+    <%- sec('alerts', 'Alerts, HOLD & integration markers') %>
+    <div class="grid grid-2">
+      <div class="alert alert-info"><%- icon('info') %><p>Information alert.</p></div>
+      <div class="alert alert-success"><%- icon('check') %><p>Success – your details have been submitted.</p></div>
+      <div class="alert alert-warning"><%- icon('alert') %><p>Warning – verification pending.</p></div>
+      <div class="alert alert-danger"><%- icon('alert') %><p>Error – please correct the highlighted fields.</p></div>
+      <%- include('../partials/hold', { holdText: 'Used wherever a requirement is not yet confirmed. Business logic is not implemented behind a HOLD marker.' }) %>
+      <div class="integration-point"><strong><%- icon('link') %> <%= t('hold.integration') %></strong>Marks every point where the Mahaamrut portal connects to this platform.</div>
+    </div>
+
+    <%- sec('forms', 'Forms, dropdowns & file upload') %>
+    <form class="card form" onsubmit="return false">
+      <div class="form-grid">
+        <div class="field"><label for="ds1">Text input<span class="req">*</span></label><input class="input" id="ds1" placeholder="Candidate name"><span class="help">Helper text</span></div>
+        <div class="field"><label for="ds2">Dropdown</label><select class="select" id="ds2"><option>UPSC</option><option>MPSC</option></select></div>
+        <div class="field"><label for="ds3">Invalid input</label><input class="input" id="ds3" aria-invalid="true" value="abc"><span class="field-error">Enter a valid contact number</span></div>
+        <div class="field"><label for="ds4">Date</label><input class="input" type="date" id="ds4"></div>
+        <div class="field full"><span class="label">Choice (radio)</span><div class="choice-group"><label class="choice"><input type="radio" name="ds5" checked><span>YES</span></label><label class="choice"><input type="radio" name="ds5"><span>NO</span></label></div></div>
+        <div class="field full"><label class="check"><input type="checkbox" checked> Checkbox</label></div>
+        <div class="field full"><span class="label">File upload</span><div class="file-drop"><%- icon('upload') %><span>Upload transaction screenshot (image / PDF)</span><span class="name"></span><input type="file" aria-label="File upload"></div></div>
+        <div class="field full"><label for="ds6">Textarea</label><textarea class="textarea" id="ds6"></textarea></div>
+      </div>
+    </form>
+
+    <%- sec('tables', 'Tables (stack into cards on mobile)') %>
+    <div class="table-wrap"><table class="table table-stack">
+      <thead><tr><th scope="col">Exam</th><th scope="col">Subject</th><th scope="col">Lecture</th><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Mode</th><th scope="col">Centre / Online Link</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Exam">MPSC</td><td data-label="Subject">History</td><td data-label="Lecture">Maharashtra – Overview</td><td data-label="Date">12 Oct 2026</td><td data-label="Time">9:30 AM</td><td data-label="Mode"><span class="badge badge-offline">OFFLINE</span></td><td data-label="Centre">AMRUT Pune</td></tr>
+        <tr><td data-label="Exam">UPSC</td><td data-label="Subject">Polity</td><td data-label="Lecture">Constitution – Basics</td><td data-label="Date">14 Oct 2026</td><td data-label="Time">10:00 AM</td><td data-label="Mode"><span class="badge badge-online">ONLINE</span></td><td data-label="Link"><a href="#">Join</a></td></tr>
+      </tbody>
+    </table></div>
+    <nav class="pagination" aria-label="Pagination"><a href="#">‹</a><span aria-current="page">1</span><a href="#">2</a><a href="#">3</a><a href="#">›</a></nav>
+
+    <%- sec('tabs', 'Tabs, chips & stepper') %>
+    <div class="card">
+      <nav class="tabs"><a href="#" aria-current="page">Upcoming</a><a href="#">Past</a><a href="#">Guest Lectures</a></nav>
+      <div class="chips mb-2"><a class="chip" aria-current="true" href="#">All</a><a class="chip" href="#">Foundation</a><a class="chip" href="#">Crash Course</a></div>
+      <ol class="steps-h"><li class="done">Select Course</li><li class="done">Batch</li><li class="current">Accommodation</li><li>Deposit</li><li>Submit</li></ol>
+    </div>
+
+    <%- sec('cards', 'Cards') %>
+    <div class="grid grid-3">
+      <div class="card card-accent"><h3>Accent card</h3><p class="small muted mb-0">Courses, examinations, centres.</p></div>
+      <a class="card card-link quick-card" href="#"><span class="icon-tile"><%- icon('file') %></span><span class="label">Quick-access card</span><span class="sub">Dashboard shortcuts</span></a>
+      <article class="card lecture-card"><div class="date-tile"><div class="m">Oct</div><div class="d">12</div></div><div class="body"><span class="badge badge-brand" style="align-self:flex-start">Guest Lecture</span><h3>Lecture card</h3><div class="meta"><span><%- icon('clock') %>4:00 PM</span></div></div></article>
+    </div>
+
+    <%- sec('progress', 'Progress indicators') %>
+    <div class="card" style="max-width:420px"><div class="progress-label"><span>Lectures completed</span><span>2 / 5</span></div><div class="progress"><span style="width:40%"></span></div></div>
+
+    <%- sec('states', 'Empty, loading, error & success states') %>
+    <div class="grid grid-2">
+      <%- include('../partials/empty', {}) %>
+      <div class="card"><div class="skeleton" style="width:60%;height:18px"></div><div class="skeleton" style="width:90%"></div><div class="skeleton" style="width:75%"></div><div class="row mt-1"><span class="spinner"></span><span class="muted"><%= t('common.loading') %></span></div></div>
+      <div class="alert alert-danger"><%- icon('alert') %><p><strong><%= t('common.error') %>.</strong> Please try again later.</p></div>
+      <div class="alert alert-success"><%- icon('check') %><p><strong>Submitted.</strong> Registration submitted successfully.</p></div>
+    </div>
+
+    <%- sec('modal', 'Modal') %>
+    <button class="btn btn-outline" type="button" data-open="ds-modal">Open modal</button>
+    <dialog class="modal" id="ds-modal">
+      <div class="modal-head"><h3>Confirm submission</h3><button class="icon-btn" type="button" data-close aria-label="Close"><%- icon('x') %></button></div>
+      <div class="modal-body"><p class="mb-0">Submit the test? Correct answers will be shown immediately after submission.</p></div>
+      <div class="modal-foot"><button class="btn btn-ghost" type="button" data-close>Cancel</button><button class="btn btn-primary" type="button" data-close>Submit</button></div>
+    </dialog>
+  </div>
+</section>

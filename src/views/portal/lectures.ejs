@@ -1,0 +1,40 @@
+<div class="page-title">
+  <div><h1><%= guest ? t('portal.guestLectures') : t('portal.myLectures') %></h1><p><%= guest ? t('pt.guestLead') : t('pt.lecturesLead') %></p></div>
+  <% if (!guest) { %><a class="btn btn-secondary btn-sm" href="/portal/guest-lectures"><%- icon('users') %> <%= t('portal.guestLectures') %></a><% } else { %><a class="btn btn-secondary btn-sm" href="/portal/lectures"><%- icon('mic') %> <%= t('portal.myLectures') %></a><% } %>
+</div>
+
+<% const tabLabel = { upcoming: 'common.upcoming', past: 'common.past', mine: 'pt.myCourseLectures' }; %>
+<nav class="tabs" aria-label="<%= t('pt.sections') %>">
+  <% tabs.forEach(k => { %><a href="<%= base %><%= qs({ type: f.type, mode: f.mode }, { tab: k }) %>"<%- f.tab === k ? ' aria-current="page"' : '' %>><%= t(tabLabel[k]) %></a><% }) %>
+</nav>
+
+<form class="filters" method="get" action="<%= base %>" role="search" aria-label="<%= t('common.filter') %>">
+  <input type="hidden" name="tab" value="<%= f.tab %>">
+  <div class="field">
+    <label for="f-type"><%= t('common.type') %></label>
+    <select class="select" id="f-type" name="type">
+      <option value=""><%= t('common.all') %></option>
+      <% types.forEach(ty => { %><option value="<%= ty %>"<%= f.type === ty ? ' selected' : '' %>><%= t('lectureType.' + ty) %></option><% }) %>
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-mode"><%= t('common.mode') %></label>
+    <select class="select" id="f-mode" name="mode">
+      <option value=""><%= t('common.all') %></option>
+      <option value="online"<%= f.mode === 'online' ? ' selected' : '' %>><%= t('common.online') %></option>
+      <option value="offline"<%= f.mode === 'offline' ? ' selected' : '' %>><%= t('common.offline') %></option>
+    </select>
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary btn-sm" type="submit"><%- icon('search') %> <%= t('common.apply') %></button>
+    <a class="btn btn-ghost btn-sm" href="<%= base %>?tab=<%= f.tab %>"><%= t('common.reset') %></a>
+  </div>
+</form>
+
+<% if (!lectures.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'mic', emptyTitle: t('pt.noLectures'), emptyText: f.tab === 'mine' ? t('pt.noCoursesHint') : t('common.noResultsHint') }) %>
+<% } else { %>
+  <div class="grid grid-2">
+    <% lectures.forEach(lec => { %><%- include('../partials/lecture-card', { lec, base: '/portal' }) %><% }) %>
+  </div>
+<% } %>

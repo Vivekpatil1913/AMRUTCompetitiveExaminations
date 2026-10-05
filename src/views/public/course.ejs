@@ -1,0 +1,59 @@
+<%- include('../partials/page-header', { crumbs: [[t('nav.courses'), '/courses']], lead: L(course, 'description') }) %>
+<%
+  const renderTopics = (nodes) => nodes.map(n => `<li>${n.children.length ? `<details open><summary>${esc(L(n, 'name'))}</summary><ul>${renderTopics(n.children)}</ul></details>` : `<span class="leaf">${esc(L(n, 'name'))}</span>`}</li>`).join('');
+%>
+<section class="section">
+  <div class="container split">
+    <div class="stack">
+      <dl class="dl">
+        <dt><%= lang === 'mr' ? 'अभ्यासक्रम प्रकार' : 'Course category' %></dt><dd><%= lang === 'mr' && course.cat_mr ? course.cat_mr : (course.cat_en || '—') %></dd>
+        <dt><%= t('common.exam') %></dt><dd><% if (course.exam_id) { %><a href="/examinations/<%= course.exam_id %>"><%= lang === 'mr' && course.exam_mr ? course.exam_mr : course.exam_en %></a><% } else { %>—<% } %></dd>
+        <dt><%= t('common.mode') %></dt><dd><%- include('../partials/mode-badge', { m: course.mode }) %></dd>
+        <dt><%= t('common.duration') %></dt><dd><%= course.duration_days ? course.duration_days + ' ' + t('common.days') : (lang === 'mr' ? 'बॅचनुसार (प्रशासकाद्वारे निश्चित)' : 'As per batch (configured by Admin)') %></dd>
+      </dl>
+
+      <h2 class="mt-2"><%= t('common.subjects') %> &amp; <%= t('common.topics') %></h2>
+      <% if (subjects.length) { %>
+        <ul class="tree">
+          <% subjects.forEach(s => { %>
+            <li><details open><summary><%- icon('book') %> <%= L(s, 'name') %> <% if (s.stage_en) { %><span class="badge badge-neutral"><%= lang === 'mr' && s.stage_mr ? s.stage_mr : s.stage_en %></span><% } %></summary>
+              <ul><%- s.tree.length ? renderTopics(s.tree) : `<li class="small muted">${esc(lang === 'mr' ? 'उपविषय अद्याप जोडलेले नाहीत' : 'Topics not yet added')}</li>` %></ul>
+            </details></li>
+          <% }) %>
+        </ul>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'book' }) %><% } %>
+
+      <h2 class="mt-3"><%= t('portal.upcomingLectures') %></h2>
+      <% if (upcoming.length) { %><div class="stack"><% upcoming.forEach(lec => { %><%- include('../partials/lecture-card', { lec }) %><% }) %></div>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'calendar' }) %><% } %>
+
+      <% if (resources.length) { %>
+        <h2 class="mt-3"><%= t('nav.resources') %></h2>
+        <div class="grid grid-2"><% resources.forEach(r => { %><%- include('../partials/resource-card', { r }) %><% }) %></div>
+      <% } %>
+    </div>
+
+    <aside class="stack">
+      <% if (batches.length) { %>
+        <div class="card card-accent">
+          <h3><%- icon('building') %> <%= lang === 'mr' ? 'ऑफलाइन बॅच' : 'Offline batches' %></h3>
+          <% batches.forEach(b => { %>
+            <div style="padding:.5rem 0;border-bottom:1px solid var(--line-soft)">
+              <strong><%= b.name %></strong>
+              <div class="small muted"><%- icon('map') %> <%= lang === 'mr' && b.centre_mr ? b.centre_mr : (b.centre_en || '—') %></div>
+              <div class="small muted"><%- icon('calendar') %> <%= fmt.date(b.start_date) %> – <%= fmt.date(b.end_date) %></div>
+              <div class="mt-1"><span class="badge <%= b.booking_open ? 'badge-success' : 'badge-neutral' %>"><%= b.booking_open ? (lang === 'mr' ? 'नोंदणी सुरू' : 'Booking open') : (lang === 'mr' ? 'नोंदणी बंद' : 'Booking closed') %></span></div>
+            </div>
+          <% }) %>
+          <a class="btn btn-primary btn-block mt-1" href="/portal/offline"><%- icon('login') %> <%= lang === 'mr' ? 'नोंदणी / बुकिंग (लॉगिन आवश्यक)' : 'Register / Book (login required)' %></a>
+        </div>
+      <% } %>
+      <div class="card card-flat">
+        <h3><%= lang === 'mr' ? 'या अभ्यासक्रमात सहभागी व्हा' : 'Join this course' %></h3>
+        <p class="small mb-1"><%= lang === 'mr' ? 'महाअमृत पोर्टलवर नोंदणी व पडताळणीनंतर अभ्यास पोर्टलवर प्रवेश मिळतो.' : 'Access the study portal after registration and verification on the Mahaamrut portal.' %></p>
+        <a class="btn btn-register btn-block" href="/register"><%= t('nav.register') %></a>
+        <a class="btn btn-outline btn-block mt-1" href="/login"><%= t('nav.login') %></a>
+      </div>
+    </aside>
+  </div>
+</section>

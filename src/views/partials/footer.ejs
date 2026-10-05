@@ -1,0 +1,47 @@
+<footer class="site-footer">
+  <div class="tricolor" aria-hidden="true"></div>
+  <div class="container">
+    <div class="top">
+      <div>
+        <div class="footer-brand"><img src="<%= S('logo') %>" alt="AMRUT" width="120" height="48"></div>
+        <p class="mb-1" style="color:#fff;font-weight:600"><%= S('site_title') %></p>
+        <p class="small"><%= S('footer_about') %></p>
+      </div>
+      <div>
+        <h4><%= t('footer.quick') %></h4>
+        <ul>
+          <li><a href="/about"><%= t('nav.about') %></a></li>
+          <li><a href="/examinations"><%= t('nav.examinations') %></a></li>
+          <li><a href="/courses"><%= t('nav.courses') %></a></li>
+          <li><a href="/training"><%= t('nav.training') %></a></li>
+          <li><a href="/centres"><%= t('nav.centres') %></a></li>
+          <li><a href="/contribute"><%= t('nav.contribute') %></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><%= t('footer.candidate') %></h4>
+        <ul>
+          <li><a href="/register"><%= t('nav.register') %></a></li>
+          <li><a href="/login"><%= t('nav.login') %></a></li>
+          <li><a href="/study-material"><%= t('nav.studyMaterial') %></a></li>
+          <li><a href="/journey"><%= t('footer.journey') %></a></li>
+          <li><a href="/design-system"><%= t('footer.designSystem') %></a></li>
+          <li><a href="/admin/login"><%= t('footer.admin') %></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><%= t('footer.contact') %></h4>
+        <ul class="contact">
+          <li><%- icon('map') %><span><%= S('footer_address') %></span></li>
+          <% if (S('footer_phone')) { %><li><%- icon('user') %><a href="tel:<%= S('footer_phone').replace(/\s/g,'') %>"><%= S('footer_phone') %></a></li><% } %>
+          <% if (S('footer_email')) { %><li><%- icon('link') %><a href="mailto:<%= S('footer_email') %>"><%= S('footer_email') %></a></li><% } %>
+          <li><%- icon('external') %><a href="<%= S('mahaamrut_portal_url') %>" target="_blank" rel="noopener">mahaamrut.org.in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="bottom">
+      <span><%= S('footer_copyright') %></span>
+      <span><%= S('org_name') %></span>
+    </div>
+  </div>
+</footer>

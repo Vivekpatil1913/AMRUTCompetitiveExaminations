@@ -1,0 +1,35 @@
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="side">
+      <span class="badge badge-brand" style="align-self:flex-start">Mahaamrut</span>
+      <h2 class="mb-0"><%= t('reg.title') %></h2>
+      <p class="mb-0" style="color:#f3dccb"><%= t('reg.lead') %></p>
+      <ol class="steps" style="color:#fbe9da"><% t('reg.steps').forEach((s, i) => { %><li class="<%= i === 0 ? 'current' : '' %>"><%= s %></li><% }) %></ol>
+    </div>
+    <div class="main stack">
+      <h3><%= lang === 'mr' ? 'नोंदणी प्रक्रिया' : 'Proposed registration flow' %></h3>
+      <ol class="steps-h">
+        <li class="done"><%= lang === 'mr' ? 'हे संकेतस्थळ' : 'This website' %></li>
+        <li class="current">Mahaamrut</li>
+        <li><%= lang === 'mr' ? 'पडताळणी' : 'Verification' %></li>
+        <li><%= lang === 'mr' ? 'लॉगिन' : 'Login' %></li>
+      </ol>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th scope="col"><%= t('portal.category') %></th><th scope="col"><%= lang === 'mr' ? 'पडताळणी' : 'Verification' %></th></tr></thead>
+          <tbody>
+            <tr><td>लक्षित गट</td><td>EWS <%= lang === 'mr' ? 'पडताळणी' : 'verification' %></td></tr>
+            <tr><td>Non-लक्षित गट</td><td><%= lang === 'mr' ? 'जात पडताळणी' : 'Caste verification' %></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted mb-0"><span class="hold">HOLD</span> <%= lang === 'mr' ? 'पात्रता, कागदपत्रे, पडताळणी प्राधिकरण व मंजुरी/नाकारणे प्रक्रिया निश्चित करणे बाकी.' : 'Eligibility, documents, verification authority and approval / rejection process to be finalised.' %></p>
+      <a class="btn btn-register btn-lg btn-block" href="<%= S('mahaamrut_register_url') %>" rel="noopener"><%= t('reg.continue') %> <%- icon('external') %></a>
+      <div class="integration-point small">
+        <strong><%- icon('link') %> <%= t('hold.integration') %></strong>
+        <%= lang === 'mr' ? 'महाअमृत नोंदणीनंतर या पोर्टलवर परत येण्याची तांत्रिक पद्धत (redirect / प्रमाणीकरण) निश्चित करणे बाकी. दुवा प्रशासक सेटिंग्जमधून बदलता येतो.' : 'The technical mechanism for returning to this portal after Mahaamrut registration (redirect / authentication) is to be finalised. The link above is configurable in Admin settings.' %>
+      </div>
+      <div class="row-between small"><span><%= t('reg.already') %> <a href="/login"><%= t('nav.login') %></a></span><a href="/"><%= t('login.back') %></a></div>
+    </div>
+  </div>
+</div>

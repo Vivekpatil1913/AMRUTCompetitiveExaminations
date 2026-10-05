@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="<%= lang %>">
+<head>
+<%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/topbar') %>
+<div class="portal-bar">
+  <div class="container">
+    <div class="row" style="flex-wrap:nowrap;min-width:0">
+      <button class="btn btn-secondary btn-sm sidebar-toggle" type="button" data-sidebar-toggle aria-controls="portal-sidebar" aria-expanded="false"><%- icon('menu') %><span class="sr-only"><%= t('a11y.menu') %></span></button>
+      <%- include('../partials/brand', { brandHref: '/portal' }) %>
+    </div>
+    <div class="row">
+      <a class="btn btn-ghost btn-sm" href="/"><%- icon('home') %> <span class="hide-sm"><%= t('common.home') %></span></a>
+      <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline btn-sm" type="submit"><%- icon('logout') %> <%= t('portal.logout') %></button></form>
+    </div>
+  </div>
+</div>
+<%- include('../partials/marquee', { portalBase: '/portal' }) %>
+<%
+  const groups = [
+    [null, [['/portal', 'grid', 'portal.dashboard']]],
+    ['learning', [['/portal/courses', 'book', 'portal.myCourses'], ['/portal/subjects', 'layers', 'portal.mySubjects'], ['/portal/study-material', 'file', 'portal.studyMaterial'],
+      ['/portal/resources', 'video', 'portal.videos'], ['/portal/question-bank', 'question', 'portal.questionBank'], ['/portal/tests', 'test', 'portal.tests'], ['/portal/results', 'chart', 'portal.results'], ['/portal/assessment', 'brain', 'portal.assessment']]],
+    ['schedule', [['/portal/lectures', 'mic', 'portal.myLectures'], ['/portal/timetable', 'calendar', 'portal.timetable'], ['/portal/guest-lectures', 'users', 'portal.guestLectures'], ['/portal/yatra', 'route', 'portal.yatra']]],
+    ['offline', [['/portal/offline', 'building', 'portal.offline'], ['/portal/bookings', 'bed', 'portal.bookings'], ['/portal/centres', 'map', 'portal.centres']]],
+    ['info', [['/portal/announcements', 'bell', 'portal.announcements'], ['/portal/links', 'link', 'portal.links'], ['/portal/profile', 'user', 'portal.profile']]],
+  ];
+  const groupLabel = { learning: lang === 'mr' ? 'अभ्यास' : 'Learning', schedule: lang === 'mr' ? 'वेळापत्रक' : 'Schedule', offline: lang === 'mr' ? 'ऑफलाइन प्रशिक्षण' : 'Offline Training', info: lang === 'mr' ? 'माहिती' : 'Information' };
+%>
+<div class="shell">
+  <aside class="sidebar" id="portal-sidebar" aria-label="Portal navigation">
+    <div class="who">
+      <span class="avatar"><%= (candidate.name || '?').trim().charAt(0) %></span>
+      <div style="min-width:0"><div class="name"><%= candidate.name %></div><div class="id"><%= t('portal.candidateId') %>: <%= candidate.candidate_uid || '—' %></div></div>
+    </div>
+    <ul class="sidenav">
+      <% groups.forEach(([g, items]) => { %>
+        <% if (g) { %><li class="group"><%= groupLabel[g] %></li><% } %>
+        <% items.forEach(([href, ic, key]) => { const cur = href === '/portal' ? (path === '/portal' || path === '/portal/') : path === href || path.startsWith(href + '/'); %>
+          <li><a href="<%= href %>"<% if (cur) { %> aria-current="page"<% } %>><%- icon(ic) %><%= t(key) %></a></li>
+        <% }) %>
+      <% }) %>
+    </ul>
+  </aside>
+  <main id="main" class="shell-main" tabindex="-1">
+    <% if (flash) { %><div class="mb-2"><%- include('../partials/flash') %></div><% } %>
+    <%- body %>
+  </main>
+</div>
+<%- include('../partials/footer') %>
+<script src="/js/app.js" defer></script>
+</body>
+</html>

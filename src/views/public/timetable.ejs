@@ -1,0 +1,24 @@
+<%- include('../partials/page-header', { lead: lang === 'mr' ? 'व्याख्यान / सत्र, ठिकाण, ऑनलाइन / ऑफलाइन पद्धत व शेरा यांसह प्रशिक्षण वेळापत्रक' : 'Training timetable with lecture / session, place, online / offline mode and remarks' }) %>
+<section class="section">
+  <div class="container">
+    <form class="filters" method="get" action="/timetable">
+      <div class="field"><label for="f-exam"><%= t('common.exam') %></label>
+        <select class="select" id="f-exam" name="exam"><option value=""><%= t('common.all') %></option><% opts.exams.forEach(o => { %><option value="<%= o.id %>"<%= String(f.exam) === String(o.id) ? ' selected' : '' %>><%= L(o, 'name') %></option><% }) %></select></div>
+      <div class="field"><label for="f-course"><%= t('common.course') %></label>
+        <select class="select" id="f-course" name="course"><option value=""><%= t('common.all') %></option><% opts.courses.forEach(o => { %><option value="<%= o.id %>"<%= String(f.course) === String(o.id) ? ' selected' : '' %>><%= L(o, 'title') %></option><% }) %></select></div>
+      <div class="field"><label for="f-subject"><%= t('common.subject') %></label>
+        <select class="select" id="f-subject" name="subject"><option value=""><%= t('common.all') %></option><% opts.subjects.forEach(o => { %><option value="<%= o.id %>"<%= String(f.subject) === String(o.id) ? ' selected' : '' %>><%= o.short_name ? o.short_name + ' – ' : '' %><%= L(o, 'name') %></option><% }) %></select></div>
+      <div class="field"><label for="f-mode"><%= t('common.mode') %></label>
+        <select class="select" id="f-mode" name="mode"><option value=""><%= t('common.all') %></option><option value="online"<%= f.mode === 'online' ? ' selected' : '' %>><%= t('common.online') %></option><option value="offline"<%= f.mode === 'offline' ? ' selected' : '' %>><%= t('common.offline') %></option></select></div>
+      <div class="field"><label for="f-from"><%= lang === 'mr' ? 'पासून' : 'From' %></label><input class="input" type="date" id="f-from" name="from" value="<%= f.from %>"></div>
+      <div class="field"><label for="f-to"><%= lang === 'mr' ? 'पर्यंत' : 'To' %></label><input class="input" type="date" id="f-to" name="to" value="<%= f.to %>"></div>
+      <div class="actions"><button class="btn btn-primary" type="submit"><%- icon('search') %> <%= t('common.apply') %></button><a class="btn btn-ghost" href="/timetable"><%= t('common.reset') %></a></div>
+    </form>
+    <div class="row-between mb-1">
+      <p class="small muted mb-0"><%= rows.length %> <%= lang === 'mr' ? 'सत्रे' : 'sessions' %></p>
+      <span class="small muted"><span class="hold">HOLD</span> <%= lang === 'mr' ? 'वेळापत्रकाचे अंतिम फील्ड निश्चित करणे बाकी' : 'Exact timetable fields to be finalised' %></span>
+    </div>
+    <% if (rows.length) { %><%- include('../partials/timetable-table', { rows }) %>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'calendar' }) %><% } %>
+  </div>
+</section>

@@ -1,0 +1,6 @@
+<%# Derived lecture progress. expects: done, total %>
+<% const pct = total ? Math.round(done * 100 / total) : 0; %>
+<div>
+  <div class="progress-label"><span><%= t('pt.lecturesCompleted') %></span><span><%= done %> / <%= total %></span></div>
+  <div class="progress" role="progressbar" aria-label="<%= t('pt.lecturesCompleted') %>" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= pct %>"><span style="width:<%= pct %>%"></span></div>
+</div>

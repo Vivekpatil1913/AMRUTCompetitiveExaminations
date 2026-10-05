@@ -1,0 +1,6 @@
+<%# usage: include('../partials/hold', { holdTitle, holdText, holdItems }) %>
+<div class="hold-box" role="note">
+  <h4><%- icon('alert') %> <%= typeof holdTitle !== 'undefined' && holdTitle ? holdTitle : t('hold.label') %></h4>
+  <% if (typeof holdText !== 'undefined' && holdText) { %><p><%= holdText %></p><% } %>
+  <% if (typeof holdItems !== 'undefined' && holdItems) { %><ul><% holdItems.forEach(i => { %><li><%= i %></li><% }) %></ul><% } %>
+</div>

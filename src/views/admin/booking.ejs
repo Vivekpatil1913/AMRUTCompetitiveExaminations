@@ -1,0 +1,33 @@
+<div class="page-title">
+  <div><nav aria-label="Breadcrumb"><ol class="breadcrumb"><li><a href="/admin">Admin</a></li><li><a href="/admin/bookings">Bookings</a></li><li aria-current="page">#<%= b.id %></li></ol></nav>
+  <h1>Offline booking #<%= b.id %></h1><p><a href="/admin/candidates/<%= b.cid %>"><%= b.name %></a> · <span class="mono"><%= b.candidate_uid || '' %></span> · <%= t('status.' + b.category) %></p></div>
+</div>
+<div class="split">
+  <div class="stack">
+    <dl class="dl">
+      <dt>Course</dt><dd><%= b.course || '—' %></dd>
+      <dt>Batch</dt><dd><%= b.batch %> (<%= fmt.date(b.start_date) %> – <%= fmt.date(b.end_date) %>)</dd>
+      <dt>Centre</dt><dd><%= b.centre || '—' %></dd>
+      <dt>Contact</dt><dd><%= b.contact_mobile || '—' %><%= b.contact_email ? ' · ' + b.contact_email : '' %></dd>
+      <dt>Accommodation required</dt><dd><%= b.accommodation_required ? 'Yes' : 'No' %></dd>
+      <dt>Deposit applicability (batch)</dt><dd><%- b.deposit_applicability === 'hold' ? '<span class="hold">HOLD</span>' : esc(b.deposit_applicability.replace('_', ' ')) %></dd>
+      <dt>Security deposit</dt><dd><%= fmt.money(b.deposit_amount) %></dd>
+      <dt>Transaction reference</dt><dd class="mono"><%= b.transaction_ref || '—' %></dd>
+      <dt>Transaction proof</dt><dd><% if (b.proof_path) { %><a class="btn btn-secondary btn-sm" href="/files/proof/<%= b.id %>" target="_blank" rel="noopener"><%- icon('file') %> View uploaded proof</a><% } else { %>—<% } %></dd>
+      <dt>Candidate remarks</dt><dd><%= b.remarks || '—' %></dd>
+      <dt>Submitted</dt><dd><%= fmt.datetime(b.created_at) %></dd>
+    </dl>
+    <% if (b.proof_path && /\.(png|jpe?g|webp)$/i.test(b.proof_path)) { %><img src="/files/proof/<%= b.id %>" alt="Transaction proof uploaded by candidate" style="max-height:420px;border:1px solid var(--line);border-radius:10px"><% } %>
+  </div>
+  <aside class="stack">
+    <form class="card form" method="post" action="/admin/bookings/<%= b.id %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <h3>Review</h3>
+      <div class="field"><label for="payment_status">Payment / proof status</label><select class="select" id="payment_status" name="payment_status"><% ['not_applicable', 'proof_submitted', 'verified', 'rejected'].forEach(s => { %><option value="<%= s %>"<%= b.payment_status === s ? ' selected' : '' %>><%= t('status.' + s) %></option><% }) %></select></div>
+      <div class="field"><label for="status">Booking status</label><select class="select" id="status" name="status"><% ['submitted', 'confirmed', 'rejected', 'cancelled', 'completed'].forEach(s => { %><option value="<%= s %>"<%= b.status === s ? ' selected' : '' %>><%= t('status.' + s) %></option><% }) %></select></div>
+      <div class="field"><label for="admin_remarks">Admin remarks</label><textarea class="textarea" id="admin_remarks" name="admin_remarks"><%= b.admin_remarks || '' %></textarea></div>
+      <button class="btn btn-primary" type="submit">Save</button>
+    </form>
+    <div class="card"><h3>Refund</h3><p class="mb-0"><span class="hold">HOLD</span> Refund policy, deductions, timeline and authority – Discussion Required.</p></div>
+  </aside>
+</div>

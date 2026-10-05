@@ -1,0 +1,5 @@
+<%# Online test progress. expects: step (0 = select … 4 = result) %>
+<% const stepKeys = ['pt.stepSelect', 'pt.stepInstructions', 'pt.stepQuestions', 'pt.stepSubmit', 'pt.stepResult']; %>
+<ol class="steps-h" aria-label="<%= t('pt.testProgress') %>">
+  <% stepKeys.forEach((k, i) => { %><li class="<%= i < step ? 'done' : i === step ? 'current' : '' %>"<%- i === step ? ' aria-current="step"' : '' %>><%= t(k) %></li><% }) %>
+</ol>

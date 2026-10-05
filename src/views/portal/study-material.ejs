@@ -1,0 +1,30 @@
+<div class="page-title">
+  <div><h1><%= t('portal.studyMaterial') %></h1><p><%= t('pt.materialLead') %></p></div>
+</div>
+
+<div class="alert alert-info mb-2" role="note"><%- icon('info') %><p><%= t('pt.materialAccessNote') %></p></div>
+
+<form class="filters" method="get" action="/portal/study-material" role="search" aria-label="<%= t('common.filter') %>">
+  <%- include('_select', { fname: 'exam', flabel: t('common.exam'), fopts: opts.exam, fvalue: f.exam }) %>
+  <%- include('_select', { fname: 'course', flabel: t('common.course'), fopts: opts.course, fvalue: f.course }) %>
+  <%- include('_select', { fname: 'subject', flabel: t('common.subject'), fopts: opts.subject, fvalue: f.subject }) %>
+  <%- include('_select', { fname: 'topic', flabel: t('common.topic'), fopts: opts.topic, fvalue: f.topic }) %>
+  <div class="actions">
+    <button class="btn btn-primary btn-sm" type="submit"><%- icon('search') %> <%= t('common.apply') %></button>
+    <a class="btn btn-ghost btn-sm" href="/portal/study-material"><%= t('common.reset') %></a>
+  </div>
+</form>
+
+<% if (!groups.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'file', emptyTitle: t('pt.noMaterial'), emptyText: t('common.noResultsHint') }) %>
+<% } %>
+<% groups.forEach(g => { %>
+  <section class="mb-3" aria-labelledby="sm-<%= g.subject_id || 0 %>">
+    <h2 id="sm-<%= g.subject_id || 0 %>" class="mb-2" style="font-size:1.15rem"><%- icon('book') %> <%= (lang === 'mr' && g.subject_mr) ? g.subject_mr : (g.subject_en || t('pt.general')) %> <span class="small muted">(<%= g.items.length %>)</span></h2>
+    <div class="grid grid-auto"><% g.items.forEach(r => { %><%- include('../partials/resource-card', { r }) %><% }) %></div>
+  </section>
+<% }) %>
+
+<div class="mt-3">
+  <%- include('../partials/hold', { holdTitle: t('pt.paidHoldTitle'), holdText: t('pt.paidHoldText') }) %>
+</div>

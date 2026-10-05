@@ -1,0 +1,20 @@
+<div class="page-title">
+  <div><h1><%= L(attempt, 'title') %></h1><p><%= t('pt.attemptLead') %></p></div>
+</div>
+<%- include('_test-steps', { step: 2 }) %>
+
+<% if (!questions.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'question', emptyTitle: t('pt.noQuestionsYet'), emptyText: '' }) %>
+<% } else { %>
+  <form method="post" action="/portal/attempts/<%= attempt.id %>/submit" class="form" data-confirm="<%= t('pt.confirmSubmit') %>">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <% questions.forEach((q, i) => { %>
+      <%- include('_mcq', { q, i, mcqName: 'ans_' + q.id, picked: null, reveal: false }) %>
+    <% }) %>
+    <p class="small muted mt-2"><%= t('pt.unansweredNote') %></p>
+    <div class="form-actions">
+      <button class="btn btn-primary btn-lg" type="submit"><%- icon('check') %> <%= t('pt.submitTest') %></button>
+      <a class="btn btn-ghost" href="/portal/tests"><%= t('common.cancel') %></a>
+    </div>
+  </form>
+<% } %>

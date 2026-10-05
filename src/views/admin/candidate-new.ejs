@@ -1,0 +1,15 @@
+<% const err = (k) => errors[k] ? `<span class="field-error">${esc(errors[k])}</span>` : ''; %>
+<div class="page-title"><div><h1>Add candidate</h1><p>Prototype provisioning – in production candidates come from Mahaamrut (integration HOLD).</p></div><a class="btn btn-ghost" href="/admin/candidates">Back</a></div>
+<form class="card form" method="post" action="/admin/candidates" novalidate>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="form-grid">
+    <div class="field"><label for="name">Name<span class="req">*</span></label><input class="input" id="name" name="name" value="<%= v.name || '' %>" required><%- err('name') %></div>
+    <div class="field"><label for="category">Category<span class="req">*</span></label><select class="select" id="category" name="category" required><option value="">— Select —</option><option value="lakshit"<%= v.category === 'lakshit' ? ' selected' : '' %>>लक्षित गट (EWS verification)</option><option value="non_lakshit"<%= v.category === 'non_lakshit' ? ' selected' : '' %>>Non-लक्षित गट (caste verification)</option></select><%- err('category') %></div>
+    <div class="field"><label for="candidate_uid">Candidate ID</label><input class="input" id="candidate_uid" name="candidate_uid" value="<%= v.candidate_uid || '' %>"><span class="help"><span class="hold">HOLD</span> Unique ID format to be finalised.</span><%- err('candidate_uid') %></div>
+    <div class="field"><label for="mahaamrut_ref">Mahaamrut reference</label><input class="input" id="mahaamrut_ref" name="mahaamrut_ref" value="<%= v.mahaamrut_ref || '' %>"></div>
+    <div class="field"><label for="mobile">Mobile</label><input class="input" id="mobile" name="mobile" value="<%= v.mobile || '' %>"></div>
+    <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" value="<%= v.email || '' %>"></div>
+    <div class="field"><label for="password">Prototype login password</label><input class="input" id="password" name="password" type="password" autocomplete="new-password"><span class="help">Optional. Final authentication method: HOLD.</span><%- err('password') %></div>
+  </div>
+  <div class="form-actions"><button class="btn btn-primary" type="submit">Save</button></div>
+</form>

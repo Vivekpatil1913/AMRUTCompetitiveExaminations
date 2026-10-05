@@ -1,0 +1,79 @@
+<%
+  const base = '/admin/' + cfg.key;
+  const action = isNew ? base : base + '/' + row.id;
+  const val = (n) => row[n] === null || row[n] === undefined ? '' : row[n];
+  const dateVal = (v) => v instanceof Date ? v.toISOString().slice(0, 10) : String(v || '').slice(0, 10);
+  const timeVal = (v) => String(v || '').slice(0, 5);
+  const wide = (f) => ['textarea', 'm2m', 'file'].includes(f.type);
+  const scoped = (f) => cfg.scope && f.name in cfg.scope;
+%>
+<div class="page-title">
+  <div>
+    <nav aria-label="Breadcrumb"><ol class="breadcrumb"><li><a href="/admin">Admin</a></li><li><a href="<%= base %>"><%= cfg.title %></a></li><li aria-current="page"><%= isNew ? 'Add' : 'Edit' %></li></ol></nav>
+    <h1><%= isNew ? 'Add' : 'Edit' %> – <%= cfg.title %></h1>
+  </div>
+  <a class="btn btn-ghost" href="<%= base %>"><%- icon('arrow') %> Back to list</a>
+</div>
+<% if (cfg.hint) { %><div class="alert <%= /HOLD/.test(cfg.hint) ? 'alert-warning' : 'alert-info' %> mb-2"><%- icon('info') %><p><%= cfg.hint %></p></div><% } %>
+<% if (Object.keys(errors).length) { %><div class="alert alert-danger mb-2" role="alert"><%- icon('alert') %><p>Please correct the highlighted fields.</p></div><% } %>
+
+<form class="card form" method="post" action="<%= action %>?_csrf=<%= csrfToken %>" enctype="multipart/form-data" data-loading novalidate>
+  <div class="form-grid">
+    <% cfg.fields.forEach(f => { if (scoped(f)) return; const id = 'fld-' + f.name; const err = errors[f.name]; const inv = err ? `aria-invalid="true" aria-describedby="${id}-err"` : ''; %>
+      <div class="field<%= wide(f) ? ' full' : '' %>">
+        <% if (f.type === 'checkbox') { %>
+          <label class="check"><input type="checkbox" name="<%= f.name %>" <%= row[f.name] ? 'checked' : '' %>> <%= f.label %></label>
+        <% } else { %>
+          <% const req = f.required ? '<span class="req" aria-hidden="true">*</span>' : ''; %>
+          <% if (f.type === 'm2m' || f.type === 'readonly' || f.type === 'file' || (!isNew && f.readonlyOnEdit)) { %><span class="label"><%= f.label %><%- req %></span>
+          <% } else { %><label for="<%= id %>"><%= f.label %><%- req %></label><% } %>
+          <% if (f.type === 'readonly' || (!isNew && f.readonlyOnEdit)) { %>
+            <div class="input" style="background:var(--surface-alt);height:auto">
+              <% if (f.format === 'datetime') { %><%= fmt.datetime(row[f.name]) %>
+              <% } else if (f.format === 'contributorPhoto') { %><% if (row[f.name]) { %><a href="/files/contributor/<%= row.id %>" target="_blank" rel="noopener">View photo</a><% } else { %>—<% } %>
+              <% } else if (f.type === 'select') { const o = (options[f.name] || []).find(o => String(o.id) === String(row[f.name])); %><%= o ? o.label : '—' %>
+              <% } else { %><%= val(f.name) || '—' %><% } %>
+            </div>
+          <% } else if (f.type === 'textarea') { %>
+            <textarea class="textarea" id="<%= id %>" name="<%= f.name %>" <%- inv %>><%= val(f.name) %></textarea>
+          <% } else if (f.type === 'select' || f.type === 'ref') { %>
+            <select class="select" id="<%= id %>" name="<%= f.name %>" <%- inv %> <%= f.required ? 'required' : '' %>>
+              <% if (!f.required || f.type === 'ref') { %><option value="">— Select —</option><% } %>
+              <% (options[f.name] || []).forEach(o => { %><option value="<%= o.id %>"<%= String(row[f.name]) === String(o.id) ? ' selected' : '' %>><%= o.label %></option><% }) %>
+            </select>
+          <% } else if (f.type === 'm2m') { const sel = (row[f.name] || []).map(String); %>
+            <div class="card card-flat" style="max-height:240px;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.35rem">
+              <% (options[f.name] || []).forEach(o => { %><label class="check"><input type="checkbox" name="<%= f.name %>" value="<%= o.id %>" <%= sel.includes(String(o.id)) ? 'checked' : '' %>> <%= o.label %></label><% }) %>
+              <% if (!(options[f.name] || []).length) { %><span class="muted small">No options yet.</span><% } %>
+            </div>
+          <% } else if (f.type === 'file') { %>
+            <% if (row[f.name]) { %>
+              <div class="row small mb-1">
+                <span class="badge badge-success"><%- icon('file') %> Current file</span>
+                <a href="<%= f.public ? row[f.name] : (cfg.table === 'resources' ? '/files/resource/' + row.id : '#') %>" target="_blank" rel="noopener"><%= String(row[f.name]).split('/').pop() %></a>
+                <label class="check"><input type="checkbox" name="<%= f.name %>__remove"> Remove</label>
+              </div>
+            <% } %>
+            <div class="file-drop"><%- icon('upload') %><span>Choose file<%= f.accept && f.accept.includes('pdf') ? ' (PDF or image)' : ' (image)' %>, max 20 MB</span><span class="name"></span><input type="file" id="<%= id %>" name="<%= f.name %>" accept="<%= f.accept || '' %>" aria-label="<%= f.label %>"></div>
+          <% } else { %>
+            <input class="input" id="<%= id %>" name="<%= f.name %>" <%- inv %> <%= f.required ? 'required' : '' %>
+              type="<%= { number: 'number', money: 'number', date: 'date', time: 'time', url: 'url' }[f.type] || 'text' %>"
+              <%- f.type === 'money' ? 'step="0.01" min="0"' : '' %>
+              value="<%= f.type === 'date' ? dateVal(row[f.name]) : f.type === 'time' ? timeVal(row[f.name]) : val(f.name) %>">
+          <% } %>
+        <% } %>
+        <% if (f.help) { %><span class="help"><%= f.help %></span><% } %>
+        <% if (err) { %><span class="field-error" id="<%= id %>-err"><%= err %></span><% } %>
+      </div>
+    <% }) %>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit"><%- icon('check') %> Save</button>
+    <a class="btn btn-ghost" href="<%= base %>">Cancel</a>
+  </div>
+</form>
+<% if (!isNew && !cfg.noDelete) { %>
+  <form class="mt-2" method="post" action="<%= base %>/<%= row.id %>/delete" data-confirm="Delete this record? This cannot be undone.">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit" style="color:var(--danger)"><%- icon('trash') %> Delete this record</button>
+  </form>
+<% } %>

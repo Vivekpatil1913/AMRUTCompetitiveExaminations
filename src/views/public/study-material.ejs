@@ -1,0 +1,43 @@
+<%- include('../partials/page-header', { crumbs: [[t('nav.resources'), '/resources']], lead: t('home.smSub') }) %>
+<section class="section">
+  <div class="container split">
+    <div>
+      <ol class="steps-h" aria-label="Structure">
+        <li class="done"><%= t('common.exam') %></li><li class="done"><%= t('common.course') %></li><li class="done"><%= t('common.subject') %></li><li class="done"><%= t('common.topic') %></li><li class="current">PDF</li>
+      </ol>
+      <% if (total) { %>
+      <ul class="tree">
+        <% tree.forEach(e => { %>
+          <li><details open><summary><%- icon('exam') %> <%= e.label %></summary><ul>
+            <% e.children.forEach(c => { %>
+              <li><details open><summary><%- icon('book') %> <%= c.label %></summary><ul>
+                <% c.children.forEach(s => { %>
+                  <li><details open><summary><%- icon('layers') %> <%= s.label %></summary><ul>
+                    <% s.children.forEach(tp => { %>
+                      <li><details open><summary><%= tp.label %></summary><ul>
+                        <% tp.items.forEach(r => { %>
+                          <li><div class="leaf">
+                            <span><%- icon('file') %> <%= L(r, 'title') %></span>
+                            <% if (r.allowed) { %><a class="btn btn-primary btn-sm" href="/files/resource/<%= r.id %>"><%- icon('download') %> <%= t('common.download') %></a>
+                            <% } else if (r.lock === 'login') { %><a class="btn btn-secondary btn-sm" href="/login"><%- icon('lock') %> <%= t('common.loginToAccess') %></a>
+                            <% } else { %><span class="badge badge-lock"><%- icon('lock') %> <%= t('access.' + r.access_level) %></span><% } %>
+                          </div></li>
+                        <% }) %>
+                      </ul></details></li>
+                    <% }) %>
+                  </ul></details></li>
+                <% }) %>
+              </ul></details></li>
+            <% }) %>
+          </ul></details></li>
+        <% }) %>
+      </ul>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'file' }) %><% } %>
+    </div>
+    <aside class="stack">
+      <div class="alert alert-info"><%- icon('lock') %><p><%= lang === 'mr' ? 'केवळ नोंदणीकृत लक्षित गट उमेदवार किंवा प्रशासकाने विशेष परवानगी दिलेल्या उमेदवारांसाठी उपलब्ध.' : 'Available only for registered लक्षित गट candidates or candidates specially permitted by Admin.' %></p></div>
+      <% if (!candidate) { %><a class="btn btn-primary btn-block" href="/login"><%- icon('login') %> <%= t('nav.login') %></a><% } %>
+      <%- include('../partials/hold', { holdText: lang === 'mr' ? 'सशुल्क सदस्यता – तपशील चर्चेनंतर (अंमलात आणलेले नाही).' : 'Paid subscription – details to be discussed (not implemented).' }) %>
+    </aside>
+  </div>
+</section>

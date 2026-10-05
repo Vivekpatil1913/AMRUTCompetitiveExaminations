@@ -1,0 +1,6 @@
+<div class="page-title">
+  <div><h1><%= t('portal.tests') %></h1><p><%= t('pt.testsLead') %></p></div>
+  <a class="btn btn-secondary btn-sm" href="/portal/results"><%- icon('chart') %> <%= t('portal.results') %></a>
+</div>
+<%- include('_test-steps', { step: 0 }) %>
+<%- include('_test-list', { tests }) %>

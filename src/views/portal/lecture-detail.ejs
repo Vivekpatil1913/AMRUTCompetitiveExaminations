@@ -1,0 +1,56 @@
+<% const pk = (a, b) => (lang === 'mr' && lec[b]) ? lec[b] : lec[a]; %>
+<div class="page-title">
+  <div><h1><%= L(lec, 'title') %></h1><p><%= t('lectureType.' + lec.lecture_type) %> · <%= fmt.date(lec.lecture_date) %></p></div>
+  <a class="btn btn-ghost btn-sm" href="<%= ['guest', 'special', 'guidance'].includes(lec.lecture_type) ? '/portal/guest-lectures' : '/portal/lectures' %>"><%= t('common.back') %></a>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <dl class="dl">
+      <dt><%= t('pt.title') %></dt><dd><%= L(lec, 'title') %></dd>
+      <dt><%= t('common.type') %></dt><dd><span class="badge badge-brand"><%= t('lectureType.' + lec.lecture_type) %></span>
+        <% if (lec.visibility !== 'public') { %> <span class="badge badge-lock"><%- icon('lock') %> <%= t('access.' + lec.visibility) %></span><% } %></dd>
+      <dt><%= t('common.speaker') %></dt><dd><%= lec.speaker_en ? pk('speaker_en', 'speaker_mr') : '—' %><% if (lec.speaker_desig_en) { %><br><span class="small muted"><%= pk('speaker_desig_en', 'speaker_desig_mr') %></span><% } %></dd>
+      <dt><%= t('common.exam') %></dt><dd><%= pk('exam_en', 'exam_mr') || '—' %></dd>
+      <dt><%= t('common.course') %></dt><dd><% if (lec.course_id) { %><%= pk('course_en', 'course_mr') %><% } else { %>—<% } %></dd>
+      <dt><%= t('common.subject') %></dt><dd><% if (lec.subject_id) { %><a href="/portal/subjects/<%= lec.subject_id %>"><%= pk('subject_en', 'subject_mr') %></a><% } else { %>—<% } %></dd>
+      <dt><%= t('common.topic') %></dt><dd><%= pk('topic_en', 'topic_mr') || '—' %></dd>
+      <dt><%= t('common.date') %></dt><dd><%= fmt.date(lec.lecture_date) %><% if (lec.lecture_date === today) { %> <span class="badge badge-warning"><%= t('common.today') %></span><% } %></dd>
+      <dt><%= t('common.time') %></dt><dd><%= fmt.timeRange(lec.start_time, lec.end_time) %></dd>
+      <dt><%= t('common.mode') %></dt><dd><%- include('../partials/mode-badge', { m: lec.mode }) %></dd>
+      <% if (lec.mode === 'offline') { %>
+        <dt><%= t('common.centre') %></dt><dd><%= pk('centre_en', 'centre_mr') || '—' %><% if (lec.venue) { %> · <%= lec.venue %><% } %>
+          <% if (lec.centre_address) { %><br><span class="small muted"><%= lec.centre_address %></span><% } %>
+          <% if (lec.centre_map) { %><br><a class="small" href="<%= lec.centre_map %>" target="_blank" rel="noopener"><%- icon('map') %> <%= t('pt.viewMap') %> <%- icon('external') %></a><% } %></dd>
+      <% } else { %>
+        <dt><%= t('common.onlineLink') %></dt><dd>
+          <% if (!canSee) { %><span class="badge badge-lock"><%- icon('lock') %> <%= t('access.' + lec.visibility) %></span>
+          <% } else if (lec.online_link) { %><a class="btn btn-primary btn-sm" href="<%= lec.online_link %>" target="_blank" rel="noopener"><%- icon('external') %> <%= t('common.join') %><span class="sr-only"> (<%= t('pt.newTab') %>)</span></a>
+          <% } else { %><span class="muted"><%= t('pt.linkSoon') %></span><% } %></dd>
+      <% } %>
+      <% if (lec.youtube_url && canSee) { %>
+        <dt><%= t('pt.recording') %></dt><dd><a href="<%= lec.youtube_url %>" target="_blank" rel="noopener"><%- icon('youtube') %> <%= t('pt.watch') %> <%- icon('external') %></a></dd>
+      <% } %>
+      <dt><%= t('common.description') %></dt><dd><%= L(lec, 'description') || '—' %></dd>
+      <dt><%= t('common.remarks') %></dt><dd><%= lec.remarks || '—' %></dd>
+    </dl>
+  </div>
+
+  <section class="card" aria-labelledby="lt-h">
+    <div class="card-head"><h3 id="lt-h"><%- icon('test') %> <%= t('pt.lectureTests') %></h3></div>
+    <% if (!tests.length) { %>
+      <p class="small muted mb-0"><%= t('pt.noLectureTests') %></p>
+    <% } else { %>
+      <ul class="stack" style="list-style:none;padding:0;margin:0">
+        <% tests.forEach(tt => { %>
+          <li>
+            <strong><%= L(tt, 'title') %></strong>
+            <div class="small muted"><%= t('pt.testType.' + tt.test_type) %> · <%= tt.q_count %> <%= t('pt.questions') %>
+              <% if (tt.last_attempt_id) { %> · <%= t('pt.lastResult') %>: <%= tt.last_correct %> / <%= tt.last_total %><% } %></div>
+            <a class="btn btn-primary btn-sm mt-1" href="/portal/tests/<%= tt.id %>"><%- icon('test') %> <%= t('pt.takeTest') %></a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+</div>

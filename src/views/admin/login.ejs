@@ -1,0 +1,18 @@
+<div class="auth-wrap">
+  <div class="auth-card single">
+    <div class="main">
+      <span class="badge badge-brand"><%- icon('shield') %> Administration</span>
+      <h1 style="font-size:1.6rem" class="mt-1">Admin Login</h1>
+      <p class="muted small"><%= S('site_title') %></p>
+      <% if (error) { %><div class="alert alert-danger mb-2" role="alert"><%- icon('alert') %><p><%= error %></p></div><% } %>
+      <form class="form" method="post" action="/admin/login" data-loading>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field"><label for="email">Email<span class="req" aria-hidden="true">*</span></label><input class="input" id="email" name="email" type="email" required autocomplete="username" value="<%= email %>"></div>
+        <div class="field"><label for="password">Password<span class="req" aria-hidden="true">*</span></label><input class="input" id="password" name="password" type="password" required autocomplete="current-password"></div>
+        <button class="btn btn-primary btn-block btn-lg" type="submit"><%- icon('login') %> Login</button>
+      </form>
+      <p class="small muted mt-2 mb-0"><span class="hold">HOLD</span> Admin roles &amp; permissions to be finalised.</p>
+      <% if (demo) { %><p class="small muted mb-0 mt-1">Prototype: <span class="mono">admin@amrut.local</span> / <span class="mono">Admin@123</span></p><% } %>
+    </div>
+  </div>
+</div>

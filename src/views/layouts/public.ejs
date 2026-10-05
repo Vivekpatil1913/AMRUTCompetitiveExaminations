@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="<%= lang %>">
+<head>
+<%- include('../partials/head') %>
+</head>
+<body>
+<div class="site-top">
+<%- include('../partials/topbar') %>
+<%- include('../partials/header') %>
+</div>
+<%- include('../partials/marquee') %>
+<main id="main" tabindex="-1">
+  <% if (flash) { %><div class="container mt-2"><%- include('../partials/flash') %></div><% } %>
+  <%- body %>
+</main>
+<%- include('../partials/footer') %>
+<script src="/js/app.js" defer></script>
+</body>
+</html>

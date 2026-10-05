@@ -1,0 +1,29 @@
+<div class="page-title"><div><h1>Timetable</h1><p>All scheduled lectures / sessions by date. The public and candidate timetables are generated from Lectures.</p></div><a class="btn btn-primary" href="/admin/lectures/new"><%- icon('plus') %> Add lecture / session</a></div>
+<form class="filters" method="get" action="/admin/timetable">
+  <div class="field"><label for="from">From</label><input class="input" type="date" id="from" name="from" value="<%= from %>"></div>
+  <div class="field"><label for="to">To</label><input class="input" type="date" id="to" name="to" value="<%= to %>"></div>
+  <div class="actions"><button class="btn btn-primary" type="submit">Show</button></div>
+</form>
+<p class="small muted"><span class="hold">HOLD</span> Exact timetable fields to be finalised before development sign-off.</p>
+<% if (rows.length) { %>
+<div class="table-wrap">
+  <table class="table table-stack">
+    <thead><tr><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Exam</th><th scope="col">Lecture / Session</th><th scope="col">Subject</th><th scope="col">Speaker</th><th scope="col">Mode</th><th scope="col">Centre / Link</th><th scope="col">Published</th></tr></thead>
+    <tbody>
+      <% rows.forEach(r => { %>
+        <tr class="<%= r.lecture_date === today ? 'is-today' : '' %>">
+          <td data-label="Date" class="nowrap"><strong><%= fmt.date(r.lecture_date) %></strong></td>
+          <td data-label="Time" class="nowrap"><%= fmt.timeRange(r.start_time, r.end_time) %></td>
+          <td data-label="Exam"><%= r.exam || '—' %></td>
+          <td data-label="Lecture"><a href="/admin/lectures/<%= r.id %>/edit"><%= r.title_en %></a><br><span class="small muted"><%= t('lectureType.' + r.lecture_type) %></span></td>
+          <td data-label="Subject"><%= r.subject || '—' %></td>
+          <td data-label="Speaker"><%= r.speaker || '—' %></td>
+          <td data-label="Mode"><%- include('../partials/mode-badge', { m: r.mode }) %></td>
+          <td data-label="Centre / Link" class="small"><%= r.mode === 'offline' ? (r.centre || r.venue || '—') : (r.online_link ? 'Online link set' : '—') %></td>
+          <td data-label="Published"><%- r.is_published ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-neutral">No</span>' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } else { %><%- include('../partials/empty', { emptyIcon: 'calendar', emptyTitle: 'No sessions in this period' }) %><% } %>

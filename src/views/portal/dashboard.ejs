@@ -1,0 +1,130 @@
+<div class="page-title">
+  <div><h1><%= t('portal.title') %></h1><p><%= t('pt.dashboardLead') %></p></div>
+</div>
+
+<section class="welcome" aria-labelledby="welcome-h">
+  <div>
+    <h2 id="welcome-h"><%= t('portal.welcome') %>, <%= candidate.name %></h2>
+    <p class="mb-0 muted"><%= t('portal.candidateId') %>: <strong><%= candidate.candidate_uid || '—' %></strong></p>
+    <div class="kv">
+      <div><%= t('portal.candidateName') %><strong><%= candidate.name %></strong></div>
+      <div><%= t('portal.registrationStatus') %><strong><%- include('_status', { sval: candidate.registration_status }) %></strong></div>
+      <div><%= t('portal.verificationStatus') %><strong><%- include('_status', { sval: candidate.verification_status }) %></strong></div>
+      <div><%= t('portal.category') %><strong><%= t('status.' + candidate.category) %></strong></div>
+      <div><%= t('portal.selectedCourse') %><strong><%= primary ? L(primary, 'title') : '—' %></strong></div>
+      <div><%= t('portal.selectedExam') %><strong><%= primary ? ((lang === 'mr' && primary.exam_mr) ? primary.exam_mr : (primary.exam_en || '—')) : '—' %></strong></div>
+    </div>
+  </div>
+  <a class="btn btn-outline btn-sm" href="/portal/profile"><%- icon('user') %> <%= t('portal.profile') %></a>
+</section>
+
+<% if (candidate.verification_status !== 'verified') { %>
+  <div class="alert alert-<%= candidate.verification_status === 'rejected' ? 'danger' : 'warning' %> mt-2" role="status">
+    <%- icon('alert') %>
+    <p><strong><%= t('pt.limitedAccessTitle') %></strong> <%= t(candidate.verification_status === 'rejected' ? 'pt.limitedAccessRejected' : 'pt.limitedAccessPending') %>
+      <% if (candidate.verification_remarks) { %><br><span class="small"><%= t('pt.verificationRemarks') %>: <%= candidate.verification_remarks %></span><% } %></p>
+  </div>
+<% } %>
+
+<%
+  const quick = [
+    ['/portal/courses', 'book', 'portal.myCourses', courses.length],
+    ['/portal/subjects', 'layers', 'portal.mySubjects', counts.subjects],
+    ['/portal/study-material', 'file', 'portal.studyMaterial', counts.material],
+    ['/portal/question-bank', 'question', 'portal.questionBank', counts.questions],
+    ['/portal/resources?type=video', 'video', 'portal.videos', counts.videos],
+    ['/portal/resources?type=youtube', 'youtube', 'portal.youtube', counts.youtube],
+    ['/portal/lectures', 'mic', 'portal.upcomingLectures', counts.upcoming],
+    ['/portal/timetable', 'calendar', 'portal.timetable', null],
+    ['/portal/tests', 'test', 'portal.tests', counts.tests],
+    ['/portal/results', 'chart', 'portal.results', counts.results],
+    ['/portal/guest-lectures', 'users', 'portal.guestLectures', counts.guest],
+    ['/portal/yatra', 'route', 'portal.yatra', counts.yatra],
+    ['/portal/announcements', 'bell', 'portal.announcements', counts.announcements],
+    ['/portal/links', 'link', 'portal.links', counts.links],
+  ];
+%>
+<section class="mt-3" aria-labelledby="quick-h">
+  <h2 id="quick-h" class="mb-2" style="font-size:1.15rem"><%= t('portal.quickAccess') %></h2>
+  <div class="grid grid-auto-sm">
+    <% quick.forEach(([href, ic, key, n]) => { %>
+      <a class="card card-link quick-card" href="<%= href %>">
+        <span class="icon-tile"><%- icon(ic) %></span>
+        <span class="label"><%= t(key) %></span>
+        <span class="sub"><%= n == null ? t('pt.openSection') : t('pt.countAvailable').replace('{n}', n) %></span>
+      </a>
+    <% }) %>
+  </div>
+</section>
+
+<div class="split" style="margin-top:1.75rem">
+  <div class="stack">
+    <section class="card" aria-labelledby="up-h">
+      <div class="card-head"><h3 id="up-h"><%- icon('mic') %> <%= t('portal.upcomingLectures') %></h3><a class="small" href="/portal/lectures?tab=mine"><%= t('common.viewAll') %></a></div>
+      <% if (lectures.length) { %>
+        <div class="stack"><% lectures.forEach(lec => { %><%- include('../partials/lecture-card', { lec, base: '/portal' }) %><% }) %></div>
+      <% } else { %>
+        <%- include('../partials/empty', { emptyIcon: 'calendar', emptyTitle: t('pt.noUpcoming'), emptyText: t('pt.noUpcomingHint') }) %>
+      <% } %>
+    </section>
+
+    <section class="card" aria-labelledby="mc-h">
+      <div class="card-head"><h3 id="mc-h"><%- icon('book') %> <%= t('portal.myCourses') %></h3><a class="small" href="/portal/courses"><%= t('common.viewAll') %></a></div>
+      <% if (courses.length) { %>
+        <div class="grid grid-2">
+          <% courses.forEach(c => { %>
+            <article class="card card-accent">
+              <h4><a href="/portal/courses/<%= c.id %>"><%= L(c, 'title') %></a></h4>
+              <div class="meta">
+                <% if (c.exam_en) { %><span><%- icon('exam') %><%= (lang === 'mr' && c.exam_mr) ? c.exam_mr : c.exam_en %></span><% } %>
+                <span><%- include('../partials/mode-badge', { m: c.mode }) %></span>
+              </div>
+              <%- include('_progress', { done: c.lec_done, total: c.lec_total }) %>
+            </article>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <%- include('../partials/empty', { emptyIcon: 'book', emptyTitle: t('pt.noCourses'), emptyText: t('pt.noCoursesHint') }) %>
+      <% } %>
+    </section>
+  </div>
+
+  <div class="stack">
+    <section class="card" aria-labelledby="an-h">
+      <div class="card-head"><h3 id="an-h"><%- icon('bell') %> <%= t('portal.announcements') %></h3><a class="small" href="/portal/announcements"><%= t('common.viewAll') %></a></div>
+      <% if (announcements.length) { %>
+        <ul class="stack" style="list-style:none;padding:0;margin:0">
+          <% announcements.forEach(a => { %>
+            <li>
+              <span class="badge badge-info"><%= t('annCat.' + a.category) %></span>
+              <div><a href="/portal/announcements#a<%= a.id %>"><%= L(a, 'title') %></a></div>
+              <div class="small muted"><%= fmt.date(a.publish_from || a.created_at) %></div>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p class="muted small mb-0"><%= t('pt.noAnnouncements') %></p>
+      <% } %>
+    </section>
+
+    <section class="card" aria-labelledby="ya-h">
+      <div class="card-head"><h3 id="ya-h"><%- icon('route') %> <%= t('portal.yatra') %></h3><a class="small" href="/portal/yatra"><%= t('common.viewAll') %></a></div>
+      <% if (yatra.length) { %>
+        <ul class="stack" style="list-style:none;padding:0;margin:0">
+          <% yatra.forEach(y => { %>
+            <li class="row" style="flex-wrap:nowrap;align-items:flex-start">
+              <div class="date-tile" aria-hidden="true"><div class="m"><%= fmt.month(y.schedule_date) %></div><div class="d"><%= fmt.day(y.schedule_date) %></div></div>
+              <div style="min-width:0">
+                <strong><%= y.person_name %></strong>
+                <div class="small muted"><span class="sr-only"><%= fmt.date(y.schedule_date) %>, </span><%= fmt.timeRange(y.start_time, y.end_time) %> · <%= y.place %></div>
+                <% if (y.schedule_date === today) { %><span class="badge badge-warning"><%= t('common.today') %></span><% } %>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p class="muted small mb-0"><%= t('pt.noYatra') %></p>
+      <% } %>
+    </section>
+  </div>
+</div>

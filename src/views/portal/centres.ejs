@@ -1,0 +1,36 @@
+<div class="page-title">
+  <div><h1><%= t('portal.centres') %></h1><p><%= t('pt.centresLead') %></p></div>
+  <span class="hold"><%= t('pt.centreHold') %></span>
+</div>
+
+<% if (!centres.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'map', emptyTitle: t('pt.noCentres'), emptyText: t('common.noResultsHint') }) %>
+<% } else { %>
+  <div class="grid grid-2">
+    <% centres.forEach(c => { const cb = batches.filter(b => b.centre_id === c.id); %>
+      <article class="card card-accent">
+        <div class="card-head">
+          <h3><%- icon('map') %> <%= L(c, 'name') %></h3>
+          <% if (c.centre_no) { %><span class="badge badge-neutral"><%= t('pt.centreNo') %> <%= c.centre_no %></span><% } %>
+        </div>
+        <dl class="dl">
+          <dt><%= t('common.location') %></dt><dd><%= c.location || '—' %></dd>
+          <dt><%= t('pt.address') %></dt><dd><%= c.address || '—' %></dd>
+          <dt><%= t('pt.contact') %></dt><dd><%= c.contact || '—' %></dd>
+        </dl>
+        <% if (c.map_url) { %><a class="link-arrow small" href="<%= c.map_url %>" target="_blank" rel="noopener"><%- icon('map') %> <%= t('pt.viewMap') %> <%- icon('external') %></a><% } %>
+        <h4 class="mt-1" style="font-size:.95rem"><%= t('pt.batchesHere') %></h4>
+        <% if (!cb.length) { %>
+          <p class="small muted mb-0"><%= t('pt.noBatches') %></p>
+        <% } else { %>
+          <ul class="small mb-0">
+            <% cb.forEach(b => { %>
+              <li><a href="/portal/offline"><%= b.name %></a> – <%= (lang === 'mr' && b.course_mr) ? b.course_mr : b.course_en %>
+                <% if (b.start_date) { %><span class="muted">(<%= fmt.date(b.start_date) %> – <%= fmt.date(b.end_date) %>)</span><% } %></li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </article>
+    <% }) %>
+  </div>
+<% } %>

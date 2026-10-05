@@ -1,0 +1,71 @@
+<%- include('../partials/page-header', { crumbs: [[t('nav.examinations'), '/examinations']], lead: L(exam, 'description') }) %>
+<section class="section">
+  <div class="container split">
+    <div class="stack">
+      <h2><%= lang === 'mr' ? 'परीक्षा रचना' : 'Examination structure' %></h2>
+      <p class="small muted"><%= t('common.exam') %> → <%= t('common.stages') %> → <%= t('common.subject') %> → <%= t('common.topic') %> → <%= t('common.unitTests') %>. <%= lang === 'mr' ? 'रचना परीक्षेनुसार बदलते व प्रशासकाद्वारे निश्चित केली जाते.' : 'Structure varies by examination and is configured by the administrator.' %></p>
+      <%
+        const groups = stages.map(st => ({ st, subs: subjects.filter(s => s.stage_id === st.id) }));
+        const loose = subjects.filter(s => !s.stage_id || !stages.find(st => st.id === s.stage_id));
+        if (loose.length) groups.push({ st: null, subs: loose });
+        const renderTopics = (nodes) => nodes.map(n => `<li>${n.children.length ? `<details open><summary>${esc(L(n, 'name'))}</summary><ul>${renderTopics(n.children)}</ul></details>` : `<span class="leaf">${esc(L(n, 'name'))}</span>`}</li>`).join('');
+      %>
+      <% if (subjects.length) { %>
+        <ul class="tree">
+          <% groups.forEach(g => { if (!g.subs.length && g.st) return; %>
+            <li><details open><summary><%- icon('layers') %> <%= g.st ? L(g.st, 'name') : (lang === 'mr' ? 'इतर विषय' : 'Other subjects') %></summary>
+              <ul>
+                <% g.subs.forEach(s => { %>
+                  <li><details><summary><%- icon('book') %> <%= L(s, 'name') %> <% if (s.unitTests) { %><span class="badge badge-info"><%= s.unitTests %> <%= t('common.unitTests') %></span><% } %></summary>
+                    <ul><%- s.tree.length ? renderTopics(s.tree) : `<li class="small muted">${esc(lang === 'mr' ? 'उपविषय अद्याप जोडलेले नाहीत' : 'Topics not yet added')}</li>` %></ul>
+                  </details></li>
+                <% }) %>
+              </ul>
+            </details></li>
+          <% }) %>
+        </ul>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'book', emptyText: lang === 'mr' ? 'या परीक्षेचे विषय प्रशासकाद्वारे जोडले जातील.' : 'Subjects for this examination will be added by the administrator.' }) %><% } %>
+
+      <h2 class="mt-3"><%= t('nav.courses') %></h2>
+      <% if (courses.length) { %>
+        <div class="grid grid-2">
+          <% courses.forEach(c => { %>
+            <a class="card card-link" href="/courses/<%= c.id %>">
+              <span class="badge badge-brand" style="align-self:flex-start"><%= lang === 'mr' && c.cat_mr ? c.cat_mr : c.cat_en %></span>
+              <h3 style="font-size:1rem"><%= L(c, 'title') %></h3>
+              <span class="foot"><%- include('../partials/mode-badge', { m: c.mode }) %></span>
+            </a>
+          <% }) %>
+        </div>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'book' }) %><% } %>
+
+      <h2 class="mt-3"><%= t('portal.upcomingLectures') %></h2>
+      <% if (upcoming.length) { %><div class="stack"><% upcoming.forEach(lec => { %><%- include('../partials/lecture-card', { lec }) %><% }) %></div>
+      <% } else { %><%- include('../partials/empty', { emptyIcon: 'calendar' }) %><% } %>
+    </div>
+
+    <aside class="stack">
+      <div class="card card-accent">
+        <h3><%- icon('link') %> <%= lang === 'mr' ? 'अधिकृत माहिती' : 'Official information' %></h3>
+        <% [['syllabus_url', t('common.syllabus')], ['timetable_url', t('common.examTimetable')], ['website_url', t('common.officialSite')]].forEach(([k, label]) => { %>
+          <div class="row-between" style="padding:.45rem 0;border-bottom:1px solid var(--line-soft)">
+            <span><%= label %></span>
+            <% if (exam[k]) { %><a class="btn btn-secondary btn-sm" href="<%= exam[k] %>" target="_blank" rel="noopener"><%= t('common.open') %> <%- icon('external') %></a>
+            <% } else { %><span class="hold" title="<%= t('common.notConfigured') %>">HOLD</span><% } %>
+          </div>
+        <% }) %>
+        <p class="small muted mb-0"><%= lang === 'mr' ? 'अधिकृत अभ्यासक्रम / वेळापत्रक दुवे प्रशासकाद्वारे निश्चित केले जातात (चर्चा आवश्यक).' : 'Official syllabus / timetable links are configured by the administrator (discussion required).' %></p>
+      </div>
+      <% if (links.length) { %>
+        <div class="card"><h3><%= t('nav.links') %></h3>
+          <% links.forEach(l => { %><a href="<%= l.url %>" target="_blank" rel="noopener"><%- icon('external') %> <%= L(l, 'title') %></a><% }) %>
+        </div>
+      <% } %>
+      <div class="card card-flat">
+        <h3><%= lang === 'mr' ? 'सहभागी व्हा' : 'Join the programme' %></h3>
+        <p class="small mb-1"><%= lang === 'mr' ? 'अभ्यास साहित्य, चाचण्या व व्याख्यानांसाठी नोंदणी करा.' : 'Register to access study material, tests and lectures.' %></p>
+        <a class="btn btn-register btn-block" href="/register"><%= t('nav.register') %></a>
+      </div>
+    </aside>
+  </div>
+</section>

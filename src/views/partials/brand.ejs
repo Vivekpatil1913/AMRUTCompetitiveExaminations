@@ -1,0 +1,9 @@
+<a class="brand" href="<%= typeof brandHref !== 'undefined' ? brandHref : '/' %>" aria-label="<%= S('site_title') %> – <%= t('common.home') %>">
+  <% if (S('emblem')) { %><img class="emblem" src="<%= S('emblem') %>" alt="" width="34" height="58"><% } %>
+  <img class="logo" src="<%= S('logo') %>" alt="AMRUT" width="140" height="34">
+  <span class="divider" aria-hidden="true"></span>
+  <span class="titles">
+    <span class="prog"><%= S('site_title') %></span>
+    <span class="org"><%= S('org_name') %></span>
+  </span>
+</a>

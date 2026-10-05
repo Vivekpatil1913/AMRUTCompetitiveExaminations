@@ -1,0 +1,42 @@
+<% const pk = (a, b) => (lang === 'mr' && lec[b]) ? lec[b] : lec[a]; %>
+<%- include('../partials/page-header', { crumbs: [[t('nav.lectures'), '/lectures']], lead: t('lectureType.' + lec.lecture_type) }) %>
+<section class="section">
+  <div class="container split">
+    <div class="stack">
+      <div class="row" style="gap:.4rem">
+        <span class="badge badge-brand"><%= t('lectureType.' + lec.lecture_type) %></span>
+        <%- include('../partials/mode-badge', { m: lec.mode }) %>
+        <% if (lec.lecture_date === today) { %><span class="badge badge-warning"><%= t('common.today') %></span><% } else if (lec.lecture_date < today) { %><span class="badge badge-neutral"><%= t('common.past') %></span><% } %>
+      </div>
+      <dl class="dl">
+        <dt><%= lang === 'mr' ? 'व्याख्यान शीर्षक' : 'Lecture title' %></dt><dd><strong><%= L(lec, 'title') %></strong></dd>
+        <dt><%= t('common.speaker') %></dt><dd><%= pk('speaker_en', 'speaker_mr') || '—' %><% if (lec.speaker_desig_en) { %><br><span class="small muted"><%= pk('speaker_desig_en', 'speaker_desig_mr') %></span><% } %></dd>
+        <dt><%= t('common.exam') %></dt><dd><%= pk('exam_en', 'exam_mr') || '—' %></dd>
+        <dt><%= t('common.course') %></dt><dd><%= pk('course_en', 'course_mr') || '—' %></dd>
+        <dt><%= t('common.subject') %></dt><dd><%= pk('subject_en', 'subject_mr') || '—' %><% if (lec.topic_en) { %> → <%= pk('topic_en', 'topic_mr') %><% } %></dd>
+        <dt><%= t('common.date') %></dt><dd><%= fmt.date(lec.lecture_date) %></dd>
+        <dt><%= t('common.time') %></dt><dd><%= fmt.timeRange(lec.start_time, lec.end_time) %></dd>
+        <dt><%= t('common.mode') %></dt><dd><%- include('../partials/mode-badge', { m: lec.mode }) %></dd>
+        <% if (lec.mode === 'offline') { %>
+          <dt><%= t('common.centre') %></dt><dd><%= pk('centre_en', 'centre_mr') || '—' %><% if (lec.venue) { %> · <%= lec.venue %><% } %><% if (lec.centre_address) { %><br><span class="small muted"><%= lec.centre_address %></span><% } %></dd>
+        <% } %>
+        <% if (lec.remarks) { %><dt><%= t('common.remarks') %></dt><dd><%= lec.remarks %></dd><% } %>
+      </dl>
+      <% if (L(lec, 'description')) { %><div class="card card-flat"><p class="mb-0"><%= L(lec, 'description') %></p></div><% } %>
+    </div>
+    <aside class="stack">
+      <div class="card card-accent">
+        <h3><%- icon('link') %> <%= t('common.centreOrLink') %></h3>
+        <% if (lec.mode === 'online' && lec.online_link) { %>
+          <% if (canSee) { %><a class="btn btn-primary btn-block" href="<%= lec.online_link %>" target="_blank" rel="noopener"><%= t('common.join') %> <%- icon('external') %></a>
+          <% } else { %><a class="btn btn-secondary btn-block" href="/login"><%- icon('lock') %> <%= t('common.loginToAccess') %></a><p class="small muted mb-0"><%= t('access.' + lec.visibility) %></p><% } %>
+        <% } else if (lec.mode === 'offline') { %>
+          <p class="mb-0"><%- icon('map') %> <%= pk('centre_en', 'centre_mr') || lec.venue || '—' %></p>
+          <% if (lec.centre_map) { %><a class="btn btn-secondary btn-sm" href="<%= lec.centre_map %>" target="_blank" rel="noopener"><%= lang === 'mr' ? 'नकाशा' : 'Map' %></a><% } %>
+        <% } else { %><p class="muted mb-0">—</p><% } %>
+        <% if (lec.youtube_url && canSee) { %><a class="btn btn-outline btn-block" href="<%= lec.youtube_url %>" target="_blank" rel="noopener"><%- icon('youtube') %> YouTube</a><% } %>
+      </div>
+      <a class="btn btn-ghost" href="/lectures"><%- icon('arrow') %> <%= t('common.back') %></a>
+    </aside>
+  </div>
+</section>

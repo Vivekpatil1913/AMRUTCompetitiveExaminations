@@ -1,0 +1,33 @@
+<div class="page-title">
+  <div><h1><%= t('portal.results') %></h1><p><%= t('pt.resultsLead') %></p></div>
+  <a class="btn btn-secondary btn-sm" href="/portal/tests"><%- icon('test') %> <%= t('portal.tests') %></a>
+</div>
+<% if (!attempts.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'chart', emptyTitle: t('pt.noResults'), emptyText: t('pt.noResultsHint') }) %>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="table table-stack">
+      <caption class="sr-only"><%= t('portal.results') %></caption>
+      <thead><tr>
+        <th scope="col"><%= t('pt.test') %></th><th scope="col"><%= t('common.type') %></th><th scope="col"><%= t('common.subject') %></th>
+        <th scope="col"><%= t('pt.submittedOn') %></th><th scope="col"><%= t('pt.score') %></th><th scope="col"><%= t('pt.correct') %></th>
+        <th scope="col"><%= t('pt.incorrect') %></th><th scope="col"><%= t('pt.unanswered') %></th><th scope="col"><span class="sr-only"><%= t('pt.actions') %></span></th>
+      </tr></thead>
+      <tbody>
+        <% attempts.forEach(a => { %>
+          <tr>
+            <td data-label="<%= t('pt.test') %>"><strong><%= L(a, 'title') %></strong></td>
+            <td data-label="<%= t('common.type') %>"><%= t('pt.testType.' + a.test_type) %></td>
+            <td data-label="<%= t('common.subject') %>"><%= (lang === 'mr' && a.subject_mr) ? a.subject_mr : (a.subject_en || '—') %></td>
+            <td data-label="<%= t('pt.submittedOn') %>" class="nowrap"><%= fmt.datetime(a.submitted_at) %></td>
+            <td data-label="<%= t('pt.score') %>"><strong><%= a.correct %> / <%= a.total %></strong></td>
+            <td data-label="<%= t('pt.correct') %>"><%= a.correct %></td>
+            <td data-label="<%= t('pt.incorrect') %>"><%= a.incorrect %></td>
+            <td data-label="<%= t('pt.unanswered') %>"><%= a.unanswered %></td>
+            <td data-label="<%= t('pt.actions') %>" class="actions"><a class="btn btn-outline btn-sm" href="/portal/attempts/<%= a.id %>/result"><%= t('pt.viewResult') %></a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

@@ -1,0 +1,59 @@
+<%- include('../partials/page-header', { lead: lang === 'mr' ? 'कार्यक्रमात ऑनलाइन व ऑफलाइन दोन्ही प्रकारचे प्रशिक्षण उपलब्ध आहे. व्याख्याने विनामूल्य आहेत.' : 'The programme supports both online and offline training. Lectures are free of cost.' }) %>
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card card-accent">
+        <div class="card-head"><h3><%- icon('video') %> <%= lang === 'mr' ? 'ऑनलाइन प्रशिक्षण' : 'Online training' %></h3><%- include('../partials/mode-badge', { m: 'online' }) %></div>
+        <p class="small mb-1"><%= lang === 'mr' ? 'ऑनलाइन व्याख्याने, यूट्यूब संसाधने, प्रश्नसंच व व्याख्यानानंतर ऑनलाइन MCQ चाचण्या.' : 'Online lectures, YouTube resources, question banks and online MCQ tests after lectures.' %></p>
+        <% onlineCourses.forEach(c => { %><a href="/courses/<%= c.id %>" class="small"><%- icon('chevron') %> <%= L(c, 'title') %></a><% }) %>
+        <div class="foot"><a class="btn btn-secondary btn-sm" href="/timetable?mode=online"><%= t('nav.timetable') %></a></div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-head"><h3><%- icon('building') %> <%= lang === 'mr' ? 'ऑफलाइन प्रशिक्षण' : 'Offline training' %></h3><%- include('../partials/mode-badge', { m: 'offline' }) %></div>
+        <p class="small mb-1"><%= lang === 'mr' ? 'प्रशिक्षण केंद्रांवर बॅचनिहाय ऑफलाइन अभ्यासक्रम (उदा. क्रॅश कोर्स). नोंदणीवेळी निवास व्यवस्थेची आवश्यकता विचारली जाते.' : 'Batch-wise offline courses (e.g. crash course) at training centres. Accommodation requirement is asked during registration.' %></p>
+        <ol class="steps small">
+          <% (lang === 'mr' ? ['अभ्यासक्रम / बॅच निवडा', 'केंद्र निवडा', 'निवास आवश्यकता निवडा', 'लागू असल्यास अनामत रक्कम भरा', 'व्यवहार पुरावा अपलोड करा', 'नोंदणी सादर करा'] : ['Select course / batch', 'Select centre', 'Select accommodation requirement', 'Pay security deposit where applicable', 'Upload transaction proof', 'Submit registration']).forEach(s => { %><li><%= s %></li><% }) %>
+        </ol>
+        <div class="foot"><a class="btn btn-primary btn-sm" href="/portal/offline"><%- icon('login') %> <%= lang === 'mr' ? 'नोंदणी / बुकिंग' : 'Register / Book' %></a><a class="btn btn-secondary btn-sm" href="/centres"><%= t('nav.centres') %></a></div>
+      </div>
+    </div>
+
+    <div class="section-head mt-4"><div><h2><%= lang === 'mr' ? 'ऑफलाइन अभ्यासक्रम व बॅच' : 'Offline courses & batches' %></h2></div></div>
+    <% if (batches.length) { %>
+    <div class="table-wrap">
+      <table class="table table-stack">
+        <thead><tr>
+          <th scope="col"><%= t('common.course') %></th><th scope="col"><%= t('common.batch') %></th><th scope="col"><%= t('common.exam') %></th>
+          <th scope="col"><%= t('common.centre') %></th><th scope="col"><%= t('common.period') %></th><th scope="col"><%= lang === 'mr' ? 'निवास' : 'Accommodation' %></th>
+          <th scope="col"><%= lang === 'mr' ? 'अनामत रक्कम' : 'Security deposit' %></th><th scope="col"><%= t('common.status') %></th>
+        </tr></thead>
+        <tbody>
+        <% batches.forEach(b => { const days = b.start_date && b.end_date ? Math.round((new Date(b.end_date) - new Date(b.start_date)) / 864e5) : null; %>
+          <tr>
+            <td data-label="<%= t('common.course') %>"><%= lang === 'mr' && b.course_mr ? b.course_mr : b.course_en %></td>
+            <td data-label="<%= t('common.batch') %>"><strong><%= b.name %></strong></td>
+            <td data-label="<%= t('common.exam') %>"><%= lang === 'mr' && b.exam_mr ? b.exam_mr : (b.exam_en || '—') %></td>
+            <td data-label="<%= t('common.centre') %>"><%= lang === 'mr' && b.centre_mr ? b.centre_mr : (b.centre_en || '—') %><% if (b.location) { %><br><span class="small muted"><%= b.location %></span><% } %></td>
+            <td data-label="<%= t('common.period') %>" class="nowrap"><%= fmt.date(b.start_date) %> – <%= fmt.date(b.end_date) %><% if (days) { %><br><span class="small muted"><%= days %> <%= t('common.days') %></span><% } %></td>
+            <td data-label="<%= lang === 'mr' ? 'निवास' : 'Accommodation' %>"><%= b.accommodation_available ? t('common.yes') : t('common.no') %></td>
+            <td data-label="<%= lang === 'mr' ? 'अनामत रक्कम' : 'Security deposit' %>">
+              <% if (b.deposit_applicability === 'hold') { %><span class="hold">HOLD</span>
+              <% } else if (b.deposit_applicability === 'not_applicable') { %><%= t('status.not_applicable') %>
+              <% } else { %><%= fmt.money(b.deposit_amount) %><br><span class="small muted"><%= b.deposit_applicability === 'accommodation_only' ? (lang === 'mr' ? 'निवास घेतल्यास' : 'If accommodation is taken') : (lang === 'mr' ? 'सर्व सहभागी' : 'All participants') %></span><% } %>
+            </td>
+            <td data-label="<%= t('common.status') %>"><span class="badge <%= b.booking_open ? 'badge-success' : 'badge-neutral' %>"><%= b.booking_open ? (lang === 'mr' ? 'नोंदणी सुरू' : 'Booking open') : (lang === 'mr' ? 'नोंदणी बंद' : 'Closed') %></span></td>
+          </tr>
+        <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'building' }) %><% } %>
+
+    <div class="grid grid-2 mt-3">
+      <div class="alert alert-info"><%- icon('rupee') %><p><%= S('deposit_note') %></p></div>
+      <%- include('../partials/hold', { holdItems: lang === 'mr'
+        ? ['अनामत रकमेची लागूता व अंतिम रक्कम', 'परतावा धोरण, कपात व कालमर्यादा', 'निवास प्रक्रिया व पेमेंट नियम', 'कोर्स कालावधी (७५ दिवस / १५ दिवस – विसंगत संदर्भ; बॅचनुसार निश्चित)']
+        : ['Security deposit applicability & final amount', 'Refund policy, deductions & timeline', 'Accommodation workflow & payment rules', 'Course duration (75-day / 15-day – inconsistent references; configured per batch)'] }) %>
+    </div>
+  </div>
+</section>

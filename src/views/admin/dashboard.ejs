@@ -1,0 +1,51 @@
+<div class="page-title"><div><h1>Dashboard</h1><p>Programme administration overview</p></div></div>
+<div class="stat-grid">
+  <% [
+    ['/admin/candidates', 'users', c.candidates, 'Candidates'], ['/admin/candidates?verification=pending', 'shield', c.pending, 'Pending verification'],
+    ['/admin/examinations', 'exam', c.exams, 'Examinations'], ['/admin/courses', 'book', c.courses, 'Courses'],
+    ['/admin/timetable', 'calendar', c.upcoming, 'Upcoming lectures'], ['/admin/study-material', 'file', c.resources, 'Learning resources'],
+    ['/admin/questions', 'question', c.questions, 'MCQ questions'], ['/admin/bookings', 'bed', c.bookings, 'New offline bookings'],
+    ['/admin/bookings?tab=proofs', 'upload', c.proofs, 'Proofs to review'], ['/admin/contributors', 'heart', c.contributors, 'New contributor requests'],
+  ].forEach(([href, ic, v, k]) => { %>
+    <a class="stat" href="<%= href %>"><span class="icon-tile"><%- icon(ic) %></span><span><span class="v" style="display:block"><%= v %></span><span class="k"><%= k %></span></span></a>
+  <% }) %>
+</div>
+
+<div class="grid grid-2 mt-3">
+  <div class="card">
+    <div class="card-head"><h3><%- icon('calendar') %> Upcoming lectures</h3><a class="small" href="/admin/timetable">Timetable</a></div>
+    <% if (lectures.length) { lectures.forEach(l => { %>
+      <div class="row-between" style="padding:.35rem 0;border-bottom:1px solid var(--line-soft)">
+        <a href="/admin/lectures/<%= l.id %>/edit"><%= l.title_en %></a>
+        <span class="small muted nowrap"><%= fmt.date(l.lecture_date) %> · <%= fmt.time(l.start_time) %> <%- include('../partials/mode-badge', { m: l.mode }) %></span>
+      </div>
+    <% }) } else { %><p class="muted mb-0">No upcoming lectures.</p><% } %>
+    <a class="btn btn-secondary btn-sm mt-1" href="/admin/lectures/new"><%- icon('plus') %> Add lecture</a>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3><%- icon('bed') %> Latest offline bookings</h3><a class="small" href="/admin/bookings">All</a></div>
+    <% if (bookings.length) { bookings.forEach(b => { %>
+      <div class="row-between" style="padding:.35rem 0;border-bottom:1px solid var(--line-soft)">
+        <a href="/admin/bookings/<%= b.id %>"><%= b.name %> – <%= b.batch %></a>
+        <span class="row" style="gap:.3rem"><span class="badge badge-brand"><%= t('status.' + b.status) %></span><span class="badge <%= b.payment_status === 'proof_submitted' ? 'badge-warning' : 'badge-neutral' %>"><%= t('status.' + b.payment_status) %></span></span>
+      </div>
+    <% }) } else { %><p class="muted mb-0">No bookings yet.</p><% } %>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3><%- icon('heart') %> Contributor / NGO requests</h3><a class="small" href="/admin/contributors">All</a></div>
+    <% if (contributors.length) { contributors.forEach(x => { %>
+      <div class="row-between" style="padding:.35rem 0;border-bottom:1px solid var(--line-soft)">
+        <a href="/admin/contributors/<%= x.id %>/edit"><%= x.name %></a><span class="small muted"><%= t('contribType.' + x.contribution_type) %> · <%= fmt.datetime(x.created_at) %></span>
+      </div>
+    <% }) } else { %><p class="muted mb-0">No requests yet.</p><% } %>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3><%- icon('alert') %> Pending management decisions</h3></div>
+    <ul class="small mb-0" style="padding-left:1.1rem">
+      <li>Mahaamrut authentication / redirect integration</li><li>Unique candidate ID format</li><li>Eligibility &amp; verification process</li>
+      <li>Payment provider / account, deposit applicability, refund rules</li><li>Test scoring, negative marking, randomisation</li>
+      <li>Psychological assessment design</li><li>Admin roles &amp; permissions</li><li>WhatsApp / email / SMS provider</li>
+    </ul>
+    <p class="small muted mb-0 mt-1">Full list: <span class="mono">docs/</span> → HOLD items.</p>
+  </div>
+</div>

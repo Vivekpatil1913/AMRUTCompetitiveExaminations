@@ -1,0 +1,25 @@
+<div class="page-title">
+  <div><h1><%= t('portal.mySubjects') %></h1><p><%= t('pt.subjectsLead') %></p></div>
+</div>
+
+<% if (!groups.length) { %>
+  <%- include('../partials/empty', { emptyIcon: 'layers', emptyTitle: t('pt.noSubjects'), emptyText: t('pt.noCoursesHint') }) %>
+<% } %>
+<% groups.forEach(g => { %>
+  <section class="mb-3" aria-labelledby="ex-<%= g.exam_id || 0 %>">
+    <h2 id="ex-<%= g.exam_id || 0 %>" class="mb-2" style="font-size:1.15rem"><%- icon('exam') %> <%= (lang === 'mr' && g.exam_mr) ? g.exam_mr : (g.exam_en || t('pt.general')) %></h2>
+    <div class="grid grid-auto">
+      <% g.items.forEach(s => { %>
+        <a class="card card-link" href="/portal/subjects/<%= s.id %>">
+          <div class="row" style="flex-wrap:nowrap"><span class="icon-tile"><%- icon('book') %></span><h3 style="font-size:1.02rem"><%= L(s, 'name') %></h3></div>
+          <% if (L(s, 'description')) { %><p class="small muted mb-0"><%= L(s, 'description') %></p><% } %>
+          <div class="meta">
+            <span><%- icon('layers') %><%= s.topic_count %> <%= t('common.topics') %></span>
+            <span><%- icon('file') %><%= s.material_count %> <%= t('portal.studyMaterial') %></span>
+            <span><%- icon('test') %><%= s.test_count %> <%= t('portal.tests') %></span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+<% }) %>

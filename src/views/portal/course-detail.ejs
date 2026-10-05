@@ -1,0 +1,60 @@
+<% const pk = (r, a, b) => (lang === 'mr' && r[b]) ? r[b] : r[a]; %>
+<div class="page-title">
+  <div><h1><%= L(course, 'title') %></h1><p><%= pk(course, 'exam_en', 'exam_mr') || t('portal.myCourses') %></p></div>
+  <a class="btn btn-ghost btn-sm" href="/portal/courses"><%= t('common.back') %></a>
+</div>
+
+<div class="split mb-3">
+  <dl class="dl">
+    <dt><%= t('common.exam') %></dt><dd><%= pk(course, 'exam_en', 'exam_mr') || '—' %></dd>
+    <dt><%= t('portal.category') %></dt><dd><%= pk(course, 'category_en', 'category_mr') || '—' %></dd>
+    <dt><%= t('common.mode') %></dt><dd><%- include('../partials/mode-badge', { m: course.mode }) %></dd>
+    <dt><%= t('common.batch') %></dt><dd><%= course.batch_name || '—' %></dd>
+    <dt><%= t('common.period') %></dt><dd><%= course.start_date ? fmt.date(course.start_date) + ' – ' + fmt.date(course.end_date) : '—' %></dd>
+    <dt><%= t('pt.centreOrOnline') %></dt><dd><%= pk(course, 'centre_en', 'centre_mr') || (course.mode === 'offline' ? '—' : t('common.online')) %></dd>
+    <dt><%= t('common.status') %></dt><dd><%- include('_status', { sval: course.enrollment_status }) %></dd>
+  </dl>
+  <div class="card">
+    <%- include('_progress', { done: course.lec_done, total: course.lec_total }) %>
+    <% if (L(course, 'description')) { %><p class="small mb-0"><%= L(course, 'description') %></p><% } %>
+  </div>
+</div>
+
+<% const tabs = [['subjects', 'common.subjects'], ['lectures', 'common.lecture'], ['material', 'portal.studyMaterial'], ['tests', 'portal.tests']]; %>
+<nav class="tabs" aria-label="<%= t('pt.sections') %>">
+  <% tabs.forEach(([k, label]) => { %><a href="/portal/courses/<%= course.id %>?tab=<%= k %>"<%- tab === k ? ' aria-current="page"' : '' %>><%= t(label) %></a><% }) %>
+</nav>
+
+<% if (tab === 'subjects') { %>
+  <% if (!subjects.length) { %>
+    <%- include('../partials/empty', { emptyIcon: 'layers', emptyTitle: t('pt.noSubjects'), emptyText: t('common.noResultsHint') }) %>
+  <% } else { %>
+    <div class="grid grid-2">
+      <% subjects.forEach(s => { %>
+        <section class="card">
+          <div class="card-head"><h3><%- icon('layers') %> <a href="/portal/subjects/<%= s.id %>"><%= L(s, 'name') %></a></h3></div>
+          <% if (trees[s.id] && trees[s.id].length) { %>
+            <%- include('_tree', { nodes: trees[s.id] }) %>
+          <% } else { %>
+            <p class="small muted mb-0"><%= t('pt.noTopics') %></p>
+          <% } %>
+        </section>
+      <% }) %>
+    </div>
+  <% } %>
+<% } else if (tab === 'lectures') { %>
+  <% if (!lectures.length) { %>
+    <%- include('../partials/empty', { emptyIcon: 'mic', emptyTitle: t('pt.noLectures'), emptyText: t('common.noResultsHint') }) %>
+  <% } else { %>
+    <div class="stack"><% lectures.forEach(lec => { %><%- include('../partials/lecture-card', { lec, base: '/portal' }) %><% }) %></div>
+  <% } %>
+<% } else if (tab === 'material') { %>
+  <div class="alert alert-info mb-2" role="note"><%- icon('info') %><p><%= t('pt.materialAccessNote') %></p></div>
+  <% if (!materials.length) { %>
+    <%- include('../partials/empty', { emptyIcon: 'file', emptyTitle: t('pt.noMaterial'), emptyText: t('common.noResultsHint') }) %>
+  <% } else { %>
+    <div class="grid grid-auto"><% materials.forEach(r => { %><%- include('../partials/resource-card', { r }) %><% }) %></div>
+  <% } %>
+<% } else { %>
+  <%- include('_test-list', { tests }) %>
+<% } %>

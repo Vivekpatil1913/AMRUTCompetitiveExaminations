@@ -1,0 +1,21 @@
+<%- include('../partials/page-header', {}) %>
+<section class="section">
+  <div class="container" style="max-width:960px">
+    <nav class="tabs" aria-label="<%= t('nav.announcements') %>">
+      <a href="/announcements"<% if (!category) { %> aria-current="page"<% } %>><%= t('common.all') %></a>
+      <% ['important', 'event', 'guest_lecture', 'training', 'exam'].forEach(k => { %><a href="/announcements?category=<%= k %>"<% if (category === k) { %> aria-current="page"<% } %>><%= t('annCat.' + k) %></a><% }) %>
+    </nav>
+    <% if (rows.length) { %>
+      <div class="stack">
+        <% rows.forEach(a => { %>
+          <article class="card" id="a<%= a.id %>">
+            <div class="row-between"><span class="badge badge-brand"><%= t('annCat.' + a.category) %></span><span class="small muted"><%- icon('calendar') %> <%= fmt.date(a.publish_from || a.created_at) %></span></div>
+            <h3 style="font-size:1.05rem"><%= L(a, 'title') %></h3>
+            <% if (L(a, 'body')) { %><p class="mb-0"><%= L(a, 'body') %></p><% } %>
+            <% if (a.link_url) { %><div class="foot"><a class="link-arrow" href="<%= a.link_url %>"><%= t('common.viewDetails') %> <%- icon('arrow') %></a></div><% } %>
+          </article>
+        <% }) %>
+      </div>
+    <% } else { %><%- include('../partials/empty', { emptyIcon: 'bell' }) %><% } %>
+  </div>
+</section>

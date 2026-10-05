@@ -1,0 +1,38 @@
+<div class="page-title">
+  <div><h1>Users / Candidates</h1><p><%= rows.length %> shown · registration status, verification, category, courses &amp; access</p></div>
+  <a class="btn btn-primary" href="/admin/candidates/new"><%- icon('plus') %> Add candidate</a>
+</div>
+<div class="integration-point mb-2 small"><strong><%- icon('link') %> <%= t('hold.integration') %></strong>Candidate records are expected to come from Mahaamrut after registration &amp; verification. Until the integration is finalised, records can be added here for the prototype.</div>
+<nav class="tabs">
+  <a href="/admin/candidates"<% if (!f.verification) { %> aria-current="page"<% } %>>All</a>
+  <a href="/admin/candidates?verification=pending"<% if (f.verification === 'pending') { %> aria-current="page"<% } %>>Pending verification</a>
+  <a href="/admin/candidates?verification=verified"<% if (f.verification === 'verified') { %> aria-current="page"<% } %>>Verified</a>
+  <a href="/admin/candidates?verification=rejected"<% if (f.verification === 'rejected') { %> aria-current="page"<% } %>>Rejected</a>
+</nav>
+<form class="filters" method="get" action="/admin/candidates">
+  <div class="field"><label for="q">Search</label><input class="input" id="q" name="q" value="<%= f.q %>" placeholder="Name, ID, mobile, email"></div>
+  <div class="field"><label for="category">Category</label><select class="select" id="category" name="category"><option value="">All</option><option value="lakshit"<%= f.category === 'lakshit' ? ' selected' : '' %>>लक्षित गट</option><option value="non_lakshit"<%= f.category === 'non_lakshit' ? ' selected' : '' %>>Non-लक्षित गट</option></select></div>
+  <input type="hidden" name="verification" value="<%= f.verification %>">
+  <div class="actions"><button class="btn btn-primary" type="submit"><%- icon('search') %> Filter</button><a class="btn btn-ghost" href="/admin/candidates">Reset</a></div>
+</form>
+<% if (rows.length) { %>
+<div class="table-wrap">
+  <table class="table table-stack">
+    <thead><tr><th scope="col">Candidate ID</th><th scope="col">Name</th><th scope="col">Mobile</th><th scope="col">Category</th><th scope="col">Registration</th><th scope="col">Verification</th><th scope="col">Courses</th><th scope="col">Study material</th></tr></thead>
+    <tbody>
+      <% rows.forEach(c => { %>
+        <tr>
+          <td data-label="Candidate ID" class="mono"><%= c.candidate_uid || '—' %></td>
+          <td data-label="Name"><a href="/admin/candidates/<%= c.id %>"><%= c.name %></a><% if (!c.is_active) { %> <span class="badge badge-neutral">Inactive</span><% } %></td>
+          <td data-label="Mobile"><%= c.mobile || '—' %></td>
+          <td data-label="Category"><span class="badge badge-brand"><%= t('status.' + c.category) %></span></td>
+          <td data-label="Registration"><%= t('status.' + c.registration_status) %></td>
+          <td data-label="Verification"><span class="status-dot <%= c.verification_status === 'verified' ? 'ok' : c.verification_status === 'pending' ? 'wait' : 'bad' %>"><%= t('status.' + c.verification_status) %></span></td>
+          <td data-label="Courses"><%= c.courses %></td>
+          <td data-label="Study material"><%= c.category === 'lakshit' && c.verification_status === 'verified' ? 'लक्षित गट' : c.study_material_permitted ? 'Admin-permitted' : '—' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } else { %><%- include('../partials/empty', { emptyIcon: 'users', emptyTitle: 'No candidates found' }) %><% } %>

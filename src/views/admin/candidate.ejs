@@ -1,0 +1,82 @@
+<% const err = (k) => errors[k] ? `<span class="field-error">${esc(errors[k])}</span>` : ''; %>
+<div class="page-title">
+  <div>
+    <nav aria-label="Breadcrumb"><ol class="breadcrumb"><li><a href="/admin">Admin</a></li><li><a href="/admin/candidates">Candidates</a></li><li aria-current="page"><%= c.name %></li></ol></nav>
+    <h1><%= c.name %></h1>
+    <p><span class="mono"><%= c.candidate_uid || 'No ID' %></span> · <span class="badge badge-brand"><%= t('status.' + c.category) %></span>
+      <span class="status-dot <%= c.verification_status === 'verified' ? 'ok' : c.verification_status === 'pending' ? 'wait' : 'bad' %>"><%= t('status.' + c.verification_status) %></span></p>
+  </div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <form class="card form" method="post" action="/admin/candidates/<%= c.id %>" novalidate>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="card-head"><h3><%- icon('user') %> Profile &amp; verification</h3></div>
+      <div class="form-grid">
+        <div class="field"><label for="name">Name<span class="req">*</span></label><input class="input" id="name" name="name" value="<%= c.name %>" required><%- err('name') %></div>
+        <div class="field"><label for="candidate_uid">Candidate ID</label><input class="input" id="candidate_uid" name="candidate_uid" value="<%= c.candidate_uid || '' %>"><span class="help"><span class="hold">HOLD</span> Format to be finalised</span><%- err('candidate_uid') %></div>
+        <div class="field"><label for="mobile">Mobile</label><input class="input" id="mobile" name="mobile" value="<%= c.mobile || '' %>"></div>
+        <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" value="<%= c.email || '' %>"></div>
+        <div class="field"><label for="mahaamrut_ref">Mahaamrut reference</label><input class="input" id="mahaamrut_ref" name="mahaamrut_ref" value="<%= c.mahaamrut_ref || '' %>"></div>
+        <div class="field"><label for="category">Category<span class="req">*</span></label><select class="select" id="category" name="category"><option value="lakshit"<%= c.category === 'lakshit' ? ' selected' : '' %>>लक्षित गट (EWS verification)</option><option value="non_lakshit"<%= c.category === 'non_lakshit' ? ' selected' : '' %>>Non-लक्षित गट (caste verification)</option></select><%- err('category') %></div>
+        <div class="field"><label for="registration_status">Registration status</label><select class="select" id="registration_status" name="registration_status"><% ['registered', 'incomplete'].forEach(s => { %><option value="<%= s %>"<%= c.registration_status === s ? ' selected' : '' %>><%= t('status.' + s) %></option><% }) %></select></div>
+        <div class="field"><label for="verification_status">Verification status</label><select class="select" id="verification_status" name="verification_status"><% ['pending', 'verified', 'rejected'].forEach(s => { %><option value="<%= s %>"<%= c.verification_status === s ? ' selected' : '' %>><%= t('status.' + s) %></option><% }) %></select><%- err('verification_status') %></div>
+        <div class="field full"><label for="verification_remarks">Verification remarks</label><textarea class="textarea" id="verification_remarks" name="verification_remarks" style="min-height:70px"><%= c.verification_remarks || '' %></textarea>
+          <span class="help"><span class="hold">HOLD</span> Verification documents, authority and approval / rejection workflow to be finalised. Status is recorded manually.</span></div>
+        <div class="field full"><label class="check"><input type="checkbox" name="study_material_permitted" <%= c.study_material_permitted ? 'checked' : '' %>> Specially permitted to access study material (in addition to लक्षित गट)</label></div>
+        <div class="field full"><label class="check"><input type="checkbox" name="is_active" <%= c.is_active ? 'checked' : '' %>> Account active</label></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" type="submit"><%- icon('check') %> Save</button></div>
+    </form>
+
+    <div class="card" id="courses">
+      <div class="card-head"><h3><%- icon('book') %> Assigned courses</h3></div>
+      <% if (enrollments.length) { %>
+        <div class="table-wrap"><table class="table"><thead><tr><th scope="col">Course</th><th scope="col">Batch</th><th scope="col">Status</th><th scope="col" class="actions"></th></tr></thead><tbody>
+          <% enrollments.forEach(e => { %><tr><td><%= e.course %></td><td><%= e.batch || '—' %></td><td><%= t('status.' + e.status) %></td>
+            <td class="actions"><form method="post" action="/admin/candidates/<%= c.id %>/enroll/<%= e.id %>/delete" data-confirm="Remove this course?"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit" style="color:var(--danger)">Remove</button></form></td></tr><% }) %>
+        </tbody></table></div>
+      <% } else { %><p class="muted">No courses assigned.</p><% } %>
+      <form class="row mt-1" method="post" action="/admin/candidates/<%= c.id %>/enroll">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label class="sr-only" for="course_id">Course</label><select class="select" id="course_id" name="course_id" style="max-width:280px" required><option value="">— Course —</option><% courses.forEach(o => { %><option value="<%= o.id %>"><%= o.title_en %></option><% }) %></select>
+        <label class="sr-only" for="batch_id">Batch</label><select class="select" id="batch_id" name="batch_id" style="max-width:240px"><option value="">— Batch (optional) —</option><% batches.forEach(o => { %><option value="<%= o.id %>"><%= o.name %></option><% }) %></select>
+        <button class="btn btn-secondary" type="submit"><%- icon('plus') %> Assign</button>
+      </form>
+    </div>
+
+    <div class="card" id="access">
+      <div class="card-head"><h3><%- icon('lock') %> Permitted resources (per-resource grants)</h3></div>
+      <% if (grants.length) { grants.forEach(g => { %>
+        <div class="row-between" style="padding:.35rem 0;border-bottom:1px solid var(--line-soft)">
+          <span><span class="badge badge-brand"><%= t('resourceType.' + g.resource_type) %></span> <%= g.title_en %></span>
+          <form method="post" action="/admin/candidates/<%= c.id %>/grants/<%= g.resource_id %>/delete"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit" style="color:var(--danger)">Revoke</button></form>
+        </div>
+      <% }) } else { %><p class="muted">No individual grants.</p><% } %>
+      <form class="row mt-1" method="post" action="/admin/candidates/<%= c.id %>/grants">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label class="sr-only" for="resource_id">Resource</label><select class="select" id="resource_id" name="resource_id" style="max-width:420px" required><option value="">— Restricted resource —</option><% materials.forEach(m => { %><option value="<%= m.id %>">[<%= t('resourceType.' + m.resource_type) %>] <%= m.title_en %></option><% }) %></select>
+        <button class="btn btn-secondary" type="submit"><%- icon('plus') %> Grant access</button>
+      </form>
+    </div>
+  </div>
+
+  <aside class="stack">
+    <div class="card">
+      <h3><%- icon('bed') %> Offline bookings</h3>
+      <% if (bookings.length) { bookings.forEach(b => { %><a href="/admin/bookings/<%= b.id %>"><%= b.batch %></a> <span class="badge badge-brand"><%= t('status.' + b.status) %></span><% }) } else { %><p class="muted mb-0">None</p><% } %>
+    </div>
+    <div class="card">
+      <h3><%- icon('chart') %> Test results</h3>
+      <% if (attempts.length) { attempts.forEach(a => { %><div class="row-between small"><span><%= a.title_en %></span><strong><%= a.correct %> / <%= a.total %></strong></div><% }) } else { %><p class="muted mb-0">No submitted tests</p><% } %>
+    </div>
+    <form class="card form" method="post" action="/admin/candidates/<%= c.id %>/password">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <h3><%- icon('lock') %> Prototype login password</h3>
+      <div class="field"><label for="pw">New password</label><input class="input" id="pw" name="password" type="password" minlength="8" autocomplete="new-password" required></div>
+      <button class="btn btn-secondary" type="submit">Set password</button>
+      <p class="small muted mb-0"><span class="hold">HOLD</span> Final authentication method (Mahaamrut integration) not decided.</p>
+    </form>
+  </aside>
+</div>

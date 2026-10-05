@@ -1,0 +1,14 @@
+<a class="skip-link" href="#main"><%= t('a11y.skip') %></a>
+<div class="topbar">
+  <div class="container">
+    <div class="gov"><span class="flag" aria-hidden="true"></span><span><%= S('gov_label') %></span><span class="full" aria-hidden="true">|</span><span class="full">AMRUT</span></div>
+    <div class="tools">
+      <span class="ts" role="group" aria-label="<%= t('a11y.textSize') %>">
+        <button type="button" data-ts="ts-sm" aria-pressed="false" aria-label="Decrease text size">A-</button>
+        <button type="button" data-ts="" aria-pressed="true" aria-label="Normal text size">A</button>
+        <button type="button" data-ts="ts-lg" aria-pressed="false" aria-label="Increase text size">A+</button>
+      </span>
+      <a class="lang-switch" href="?lang=<%= lang === 'mr' ? 'en' : 'mr' %>" lang="<%= lang === 'mr' ? 'en' : 'mr' %>"><%= t('lang.switch') %></a>
+    </div>
+  </div>
+</div>
