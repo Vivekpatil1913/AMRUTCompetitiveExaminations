@@ -24,7 +24,7 @@
     </div>
     <div class="row">
       <a class="btn btn-ghost btn-sm" href="/" target="_blank" rel="noopener"><%- icon('external') %> <span class="hide-sm">View website</span></a>
-      <% if (admin) { %><form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-on-dark btn-sm" type="submit"><%- icon('logout') %> Logout</button></form><% } %>
+      <% if (admin) { %><form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-on-dark btn-sm" type="submit" aria-label="Logout"><%- icon('logout') %> <span class="hide-sm">Logout</span></button></form><% } %>
     </div>
   </div>
 </div>

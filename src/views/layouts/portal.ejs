@@ -12,8 +12,8 @@
       <%- include('../partials/brand', { brandHref: '/portal' }) %>
     </div>
     <div class="row">
-      <a class="btn btn-ghost btn-sm" href="/"><%- icon('home') %> <span class="hide-sm"><%= t('common.home') %></span></a>
-      <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline btn-sm" type="submit"><%- icon('logout') %> <%= t('portal.logout') %></button></form>
+      <a class="btn btn-ghost btn-sm" href="/" aria-label="<%= t('common.home') %>"><%- icon('home') %> <span class="hide-sm"><%= t('common.home') %></span></a>
+      <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline btn-sm" type="submit" aria-label="<%= t('portal.logout') %>"><%- icon('logout') %> <span class="hide-sm"><%= t('portal.logout') %></span></button></form>
     </div>
   </div>
 </div>

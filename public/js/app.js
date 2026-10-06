@@ -80,6 +80,11 @@
   document.addEventListener('change', syncConditional);
   syncConditional();
 
+  // Mark empty table cells (shown as “—”) so stacked mobile rows can hide them
+  document.querySelectorAll('.table-stack td').forEach(function (td) {
+    if (td.textContent.trim() === '—') td.classList.add('is-empty');
+  });
+
   // Prevent double submit + loading state
   document.querySelectorAll('form[data-loading]').forEach(function (f) {
     f.addEventListener('submit', function (e) {

@@ -5,7 +5,7 @@
       <% if (candidate) { %>
         <a class="btn btn-primary" href="/portal"><%- icon('grid') %> <%= t('portal.dashboard') %></a>
       <% } else { %>
-        <a class="btn btn-outline" href="/login"><%- icon('login') %> <%= t('nav.login') %></a>
+        <a class="btn btn-outline" href="/login" aria-label="<%= t('nav.login') %>"><%- icon('login') %> <span class="btn-label"><%= t('nav.login') %></span></a>
         <a class="btn btn-register" href="/register"><%= t('nav.register') %></a>
       <% } %>
       <button class="btn btn-secondary nav-toggle" type="button" data-nav-toggle aria-controls="mainnav" aria-expanded="false"><%- icon('menu') %><span class="sr-only"><%= t('a11y.menu') %></span></button>
